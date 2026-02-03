@@ -3,36 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QMK Keymap Editor</title>
+    <title>QMK Keymap Editor Pro</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* --- オリジナルスタイルをベースに調整 --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             min-height: 100vh;
             color: #fff;
             padding: 20px;
+            padding-bottom: 300px; /* 下部タブエリアのための余白 */
         }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 2em;
-            background: linear-gradient(90deg, #00d4ff, #00ff88);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        h1 { text-align: center; margin-bottom: 20px; font-size: 2em; background: linear-gradient(90deg, #00d4ff, #00ff88); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
         .panel {
             background: rgba(255, 255, 255, 0.05);
@@ -42,146 +26,14 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
+        .panel-title { font-size: 1.1em; margin-bottom: 15px; color: #00d4ff; display: flex; align-items: center; gap: 8px; }
 
-        .panel-title {
-            font-size: 1.1em;
-            margin-bottom: 15px;
-            color: #00d4ff;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .file-inputs {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .file-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .file-group label {
-            font-size: 0.9em;
-            color: #aaa;
-        }
-
-        .file-group input[type="file"] {
-            background: rgba(0, 0, 0, 0.3);
-            border: 2px dashed rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            padding: 15px;
-            color: #fff;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .file-group input[type="file"]:hover {
-            border-color: #00d4ff;
-            background: rgba(0, 212, 255, 0.1);
-        }
-
-        .status {
-            font-size: 0.85em;
-            padding: 5px 10px;
-            border-radius: 4px;
-            margin-top: 5px;
-        }
-
-        .status.success {
-            background: rgba(0, 255, 136, 0.2);
-            color: #00ff88;
-        }
-
-        .status.error {
-            background: rgba(255, 68, 68, 0.2);
-            color: #ff4444;
-        }
-
-        .layer-tabs {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-        }
-
-        .layer-tab {
-            padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            border-radius: 8px;
-            color: #fff;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .layer-tab:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .layer-tab.active {
-            background: linear-gradient(135deg, #00d4ff, #00ff88);
-            color: #000;
-            font-weight: bold;
-        }
-
-        .layer-tab .delete-layer {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: rgba(255, 0, 0, 0.5);
-            border: none;
-            color: #fff;
-            cursor: pointer;
-            font-size: 12px;
-            line-height: 1;
-            opacity: 0.7;
-        }
-
-        .layer-tab .delete-layer:hover {
-            opacity: 1;
-            background: rgba(255, 0, 0, 0.8);
-        }
-
-        .add-layer-btn {
-            padding: 10px 20px;
-            background: rgba(0, 212, 255, 0.2);
-            border: 2px dashed #00d4ff;
-            border-radius: 8px;
-            color: #00d4ff;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .add-layer-btn:hover {
-            background: rgba(0, 212, 255, 0.3);
-        }
-
-        .keyboard-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 40px;
-            min-height: 300px;
-        }
-
-        .keyboard-container {
-            position: relative;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 12px;
-            padding: 20px;
-        }
-
+        /* キーボード表示部 */
+        .keyboard-wrapper { display: flex; justify-content: center; align-items: center; padding: 40px; min-height: 400px; overflow: auto; }
+        .keyboard-container { position: relative; background: rgba(0, 0, 0, 0.3); border-radius: 12px; padding: 20px; }
+        
         .key {
             position: absolute;
-            background: linear-gradient(145deg, #3a3a4a, #2a2a3a);
-            border: 2px solid #444;
             border-radius: 6px;
             display: flex;
             align-items: center;
@@ -189,1289 +41,485 @@
             text-align: center;
             font-size: 11px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.1s;
             padding: 4px;
             word-break: break-all;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
+        .key.selected { outline: 3px solid #00ff88; outline-offset: 2px; z-index: 10; box-shadow: 0 0 20px rgba(0, 255, 136, 0.5); }
+        .key.encoder-key { border-radius: 50%; font-size: 9px; }
 
-        .key:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 212, 255, 0.3);
-            border-color: #00d4ff;
-        }
+        /* エディタエリア */
+        .editor-grid { display: grid; grid-template-columns: 1fr 350px; gap: 20px; }
+        .editor-panel { display: none; }
+        .editor-panel.visible { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .key-input-group { margin-bottom: 15px; }
+        .key-input-group label { display: block; margin-bottom: 5px; color: #aaa; font-size: 0.9em; }
+        .key-input-group input { width: 100%; padding: 10px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 6px; color: #00d4ff; font-weight: bold; }
 
-        .key.selected {
-            border-color: #00ff88;
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
-        }
-
-        .key.encoder-key {
-            border-radius: 50%;
-            font-size: 9px;
-        }
-
-        .encoder-group {
-            position: absolute;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .encoder-label {
-            font-size: 9px;
-            color: #888;
-            text-align: center;
-        }
-
-        .editor-panel {
-            display: none;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .editor-panel.visible {
-            display: grid;
-        }
-
-        .key-info {
-            background: rgba(0, 0, 0, 0.2);
-            padding: 15px;
-            border-radius: 8px;
-        }
-
-        .key-info h3 {
-            color: #00d4ff;
-            margin-bottom: 10px;
-        }
-
-        .key-input-group {
-            margin-bottom: 15px;
-        }
-
-        .key-input-group label {
-            display: block;
-            margin-bottom: 5px;
-            color: #aaa;
-            font-size: 0.9em;
-        }
-
-        .key-input-group input {
-            width: 100%;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 6px;
-            color: #fff;
-            font-family: monospace;
-        }
-
-        .key-input-group input:focus {
-            outline: none;
-            border-color: #00d4ff;
-        }
-
-        .keycode-categories {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            margin-bottom: 10px;
-        }
-
-        .category-btn {
-            padding: 5px 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            border-radius: 4px;
-            color: #fff;
-            cursor: pointer;
-            font-size: 0.8em;
-            transition: all 0.2s;
-        }
-
-        .category-btn:hover, .category-btn.active {
-            background: rgba(0, 212, 255, 0.3);
-            color: #00d4ff;
-        }
-
-        .keycode-quick {
-            display: none;
-            flex-wrap: wrap;
-            gap: 5px;
-            max-height: 200px;
-            overflow-y: auto;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 6px;
-        }
-
-        .keycode-quick.visible {
-            display: flex;
-        }
-
-        .keycode-btn {
-            padding: 5px 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
-            color: #fff;
-            cursor: pointer;
-            font-size: 0.75em;
-            font-family: monospace;
-            transition: all 0.2s;
-        }
-
-        .keycode-btn:hover {
-            background: rgba(0, 212, 255, 0.3);
-            border-color: #00d4ff;
-        }
-
-        .action-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #00d4ff, #00ff88);
-            color: #000;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .btn-danger {
-            background: rgba(255, 68, 68, 0.2);
-            color: #ff4444;
-            border: 1px solid rgba(255, 68, 68, 0.3);
-        }
-
-        .btn-danger:hover {
-            background: rgba(255, 68, 68, 0.3);
-        }
-
-        .layer-badge {
+        /* 下部固定タブエリア */
+        .bottom-dock {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #00d4ff, #00ff88);
-            color: #000;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            z-index: 1000;
+            bottom: 0; left: 0; right: 0;
+            background: #1a1a2e;
+            border-top: 2px solid #333;
+            z-index: 2000;
+            padding: 0 20px 20px 20px;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
         }
+        .tab-nav { display: flex; gap: 2px; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .tab-btn {
+            padding: 12px 24px; background: none; border: none; color: #888; cursor: pointer;
+            font-weight: bold; transition: 0.3s; border-bottom: 3px solid transparent;
+        }
+        .tab-btn.active { color: #00d4ff; border-bottom-color: #00d4ff; background: rgba(0,212,255,0.05); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
-        .output-area {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 15px;
-        }
+        /* 各種コンポーネント */
+        .color-settings { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+        .color-group { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.2); padding: 8px 12px; border-radius: 6px; }
+        .color-group label { font-size: 0.8em; color: #ccc; flex: 1; }
+        .file-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .file-group input[type="file"] { width: 100%; padding: 10px; background: rgba(0,0,0,0.2); border: 1px dashed #444; color: #fff; cursor: pointer; }
+        
+        .keycode-categories { display: flex; flex-wrap: wrap; gap: 5px; margin: 10px 0; }
+        .category-btn { padding: 4px 8px; background: rgba(255,255,255,0.1); border: none; border-radius: 4px; color: #fff; cursor: pointer; font-size: 0.8em; }
+        .category-btn.active { background: #00d4ff; color: #000; }
+        .keycode-quick { display: none; flex-wrap: wrap; gap: 5px; max-height: 150px; overflow-y: auto; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 6px; }
+        .keycode-quick.visible { display: flex; }
+        .keycode-btn { padding: 4px 6px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; cursor: pointer; font-size: 0.75em; font-family: monospace; }
+        
+        .layer-tabs { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
+        .layer-tab { padding: 8px 16px; background: rgba(255,255,255,0.1); border-radius: 6px; cursor: pointer; font-size: 0.85em; display: flex; align-items: center; gap: 5px; }
+        .layer-tab.active { background: #00d4ff; color: #000; font-weight: bold; }
+        
+        .layer-badge { position: fixed; top: 20px; right: 20px; background: #00d4ff; color: #000; padding: 8px 16px; border-radius: 20px; font-weight: bold; z-index: 1000; }
+        .btn { padding: 10px 15px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-primary { background: #00ff88; color: #000; }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; }
 
-        .output-area pre {
-            background: rgba(0, 0, 0, 0.5);
-            padding: 15px;
-            border-radius: 6px;
-            overflow-x: auto;
-            font-family: 'Consolas', monospace;
-            font-size: 0.85em;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .color-settings {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-top: 15px;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
-        }
-
-        .color-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .color-group label {
-            font-size: 0.85em;
-            color: #aaa;
-            min-width: 80px;
-        }
-
-        .color-group input[type="color"] {
-            width: 40px;
-            height: 30px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            background: transparent;
-        }
-
-        .color-preview {
-            padding: 8px 15px;
-            border-radius: 4px;
-            font-size: 0.85em;
-        }
-
-        .notes-panel {
-            margin-top: 20px;
-        }
-
-        .notes-section {
-            margin-bottom: 20px;
-        }
-
-        .notes-section h4 {
-            color: #00d4ff;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .notes-grid {
-            display: grid;
-            gap: 10px;
-        }
-
-        .note-item {
-            display: grid;
-            grid-template-columns: 120px 1fr auto;
-            gap: 10px;
-            align-items: center;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 6px;
-        }
-
-        .note-item input {
-            padding: 8px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
-            color: #fff;
-            font-size: 0.85em;
-        }
-
-        .note-item input:focus {
-            outline: none;
-            border-color: #00d4ff;
-        }
-
-        .note-item .delete-note {
-            padding: 5px 10px;
-            background: rgba(255, 68, 68, 0.2);
-            border: none;
-            border-radius: 4px;
-            color: #ff4444;
-            cursor: pointer;
-        }
-
-        .add-note-btn {
-            padding: 8px 15px;
-            background: rgba(0, 212, 255, 0.2);
-            border: 1px dashed #00d4ff;
-            border-radius: 6px;
-            color: #00d4ff;
-            cursor: pointer;
-            font-size: 0.85em;
-            margin-top: 10px;
-        }
-
-        .add-note-btn:hover {
-            background: rgba(0, 212, 255, 0.3);
-        }
-
-        @media (max-width: 768px) {
-            .editor-panel {
-                grid-template-columns: 1fr;
-            }
-            
-            .file-inputs {
-                grid-template-columns: 1fr;
-            }
-            
-            .keyboard-wrapper {
-                padding: 20px;
-                overflow-x: auto;
-            }
-            
-            .note-item {
-                grid-template-columns: 1fr;
-            }
-        }
+        @media (max-width: 768px) { .editor-panel.visible { grid-template-columns: 1fr; } .bottom-dock { position: relative; padding-bottom: 20px; } body { padding-bottom: 20px; } }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>⌨️ QMK Keymap Editor</h1>
-        
-        <div class="layer-badge" id="layerBadge">Layer 0</div>
 
-        <!-- File Input Panel -->
-        <div class="panel">
-            <div class="panel-title">📁 ファイル読み込み</div>
-            <div class="file-inputs">
-                <div class="file-group">
-                    <label>keyboard.json (QMK Firmware)</label>
-                    <input type="file" id="keyboardJsonFile" accept=".json" onchange="loadKeyboardJson(this.files[0])">
-                    <div id="keyboardJsonStatus" class="status"></div>
-                </div>
-                <div class="file-group">
-                    <label>keymap.c (既存キーマップ・オプション)</label>
-                    <input type="file" id="keymapCFile" accept=".c" onchange="loadKeymapC(this.files[0])">
-                    <div id="keymapCStatus" class="status"></div>
-                </div>
-            </div>
-        </div>
+<div class="container">
+    <h1>⌨️ QMK Keymap Editor Pro</h1>
+    <div class="layer-badge" id="layerBadge">Layer 0</div>
 
-        <!-- Layer Tabs -->
-        <div class="panel">
-            <div class="panel-title">🗂️ レイヤー</div>
-            <div class="layer-tabs" id="layerTabs"></div>
-            <button class="add-layer-btn" onclick="addLayer()">+ レイヤー追加</button>
-        </div>
+    <div class="panel">
+        <div class="panel-title">🗂️ レイヤー管理</div>
+        <div class="layer-tabs" id="layerTabs"></div>
+        <button class="btn btn-secondary" style="font-size: 0.8em;" onclick="addLayer()">+ レイヤー追加</button>
+    </div>
 
-        <!-- Color Settings -->
-        <div class="panel">
-            <div class="panel-title">🎨 カラー設定</div>
-            <div class="color-settings">
-                <div class="color-group">
-                    <label>キー背景色:</label>
-                    <input type="color" id="keyBgColor" value="#3a3a4a" onchange="updateKeyColors()">
-                </div>
-                <div class="color-group">
-                    <label>キー文字色:</label>
-                    <input type="color" id="keyTextColor" value="#ffffff" onchange="updateKeyColors()">
-                </div>
-                <div class="color-group">
-                    <label>キー枠色:</label>
-                    <input type="color" id="keyBorderColor" value="#444444" onchange="updateKeyColors()">
-                </div>
-                <div class="color-group">
-                    <label>プレビュー:</label>
-                    <span class="color-preview" id="colorPreview">KC_A</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Keyboard Display -->
-        <div class="panel">
-            <div class="panel-title">⌨️ キーボードレイアウト</div>
-            <div class="keyboard-wrapper">
-                <div class="keyboard-container" id="keyboardContainer"></div>
-            </div>
-        </div>
-
-        <!-- Key Editor -->
-        <div class="panel editor-panel" id="editorPanel">
-            <div class="key-info">
-                <h3>🔧 キー編集: <span id="selectedKeyId">-</span></h3>
-                <div class="key-input-group">
-                    <label>キーコード</label>
-                    <input type="text" id="keycodeInput" placeholder="KC_A, MO(1), LT(2,KC_SPC)..." onchange="updateKeycode(this.value)">
-                </div>
-                <div class="keycode-categories">
-                    <button class="category-btn" onclick="showCategory('basic')">基本</button>
-                    <button class="category-btn" onclick="showCategory('mod')">修飾</button>
-                    <button class="category-btn" onclick="showCategory('layer')">レイヤー</button>
-                    <button class="category-btn" onclick="showCategory('media')">メディア</button>
-                    <button class="category-btn" onclick="showCategory('mouse')">マウス</button>
-                    <button class="category-btn" onclick="showCategory('special')">特殊</button>
-                </div>
-                <div class="keycode-quick" id="basicKeycodes">
-                    <button class="keycode-btn" data-kc="KC_A">A</button>
-                    <button class="keycode-btn" data-kc="KC_B">B</button>
-                    <button class="keycode-btn" data-kc="KC_C">C</button>
-                    <button class="keycode-btn" data-kc="KC_D">D</button>
-                    <button class="keycode-btn" data-kc="KC_E">E</button>
-                    <button class="keycode-btn" data-kc="KC_F">F</button>
-                    <button class="keycode-btn" data-kc="KC_G">G</button>
-                    <button class="keycode-btn" data-kc="KC_H">H</button>
-                    <button class="keycode-btn" data-kc="KC_I">I</button>
-                    <button class="keycode-btn" data-kc="KC_J">J</button>
-                    <button class="keycode-btn" data-kc="KC_K">K</button>
-                    <button class="keycode-btn" data-kc="KC_L">L</button>
-                    <button class="keycode-btn" data-kc="KC_M">M</button>
-                    <button class="keycode-btn" data-kc="KC_N">N</button>
-                    <button class="keycode-btn" data-kc="KC_O">O</button>
-                    <button class="keycode-btn" data-kc="KC_P">P</button>
-                    <button class="keycode-btn" data-kc="KC_Q">Q</button>
-                    <button class="keycode-btn" data-kc="KC_R">R</button>
-                    <button class="keycode-btn" data-kc="KC_S">S</button>
-                    <button class="keycode-btn" data-kc="KC_T">T</button>
-                    <button class="keycode-btn" data-kc="KC_U">U</button>
-                    <button class="keycode-btn" data-kc="KC_V">V</button>
-                    <button class="keycode-btn" data-kc="KC_W">W</button>
-                    <button class="keycode-btn" data-kc="KC_X">X</button>
-                    <button class="keycode-btn" data-kc="KC_Y">Y</button>
-                    <button class="keycode-btn" data-kc="KC_Z">Z</button>
-                    <button class="keycode-btn" data-kc="KC_1">1</button>
-                    <button class="keycode-btn" data-kc="KC_2">2</button>
-                    <button class="keycode-btn" data-kc="KC_3">3</button>
-                    <button class="keycode-btn" data-kc="KC_4">4</button>
-                    <button class="keycode-btn" data-kc="KC_5">5</button>
-                    <button class="keycode-btn" data-kc="KC_6">6</button>
-                    <button class="keycode-btn" data-kc="KC_7">7</button>
-                    <button class="keycode-btn" data-kc="KC_8">8</button>
-                    <button class="keycode-btn" data-kc="KC_9">9</button>
-                    <button class="keycode-btn" data-kc="KC_0">0</button>
-                    <button class="keycode-btn" data-kc="KC_ENT">Enter</button>
-                    <button class="keycode-btn" data-kc="KC_ESC">Esc</button>
-                    <button class="keycode-btn" data-kc="KC_BSPC">BkSp</button>
-                    <button class="keycode-btn" data-kc="KC_TAB">Tab</button>
-                    <button class="keycode-btn" data-kc="KC_SPC">Space</button>
-                    <button class="keycode-btn" data-kc="KC_MINS">-</button>
-                    <button class="keycode-btn" data-kc="KC_EQL">=</button>
-                    <button class="keycode-btn" data-kc="KC_LBRC">[</button>
-                    <button class="keycode-btn" data-kc="KC_RBRC">]</button>
-                    <button class="keycode-btn" data-kc="KC_BSLS">\</button>
-                    <button class="keycode-btn" data-kc="KC_SCLN">;</button>
-                    <button class="keycode-btn" data-kc="KC_QUOT">'</button>
-                    <button class="keycode-btn" data-kc="KC_GRV">`</button>
-                    <button class="keycode-btn" data-kc="KC_COMM">,</button>
-                    <button class="keycode-btn" data-kc="KC_DOT">.</button>
-                    <button class="keycode-btn" data-kc="KC_SLSH">/</button>
-                </div>
-                <div class="keycode-quick" id="modKeycodes">
-                    <button class="keycode-btn" data-kc="KC_LSFT">L Shift</button>
-                    <button class="keycode-btn" data-kc="KC_RSFT">R Shift</button>
-                    <button class="keycode-btn" data-kc="KC_LCTL">L Ctrl</button>
-                    <button class="keycode-btn" data-kc="KC_RCTL">R Ctrl</button>
-                    <button class="keycode-btn" data-kc="KC_LALT">L Alt</button>
-                    <button class="keycode-btn" data-kc="KC_RALT">R Alt</button>
-                    <button class="keycode-btn" data-kc="KC_LGUI">L GUI</button>
-                    <button class="keycode-btn" data-kc="KC_RGUI">R GUI</button>
-                    <button class="keycode-btn" data-kc="KC_CAPS">Caps</button>
-                    <button class="keycode-btn" data-kc="LSFT_T(KC_)">LSFT_T()</button>
-                    <button class="keycode-btn" data-kc="LCTL_T(KC_)">LCTL_T()</button>
-                    <button class="keycode-btn" data-kc="LALT_T(KC_)">LALT_T()</button>
-                    <button class="keycode-btn" data-kc="LGUI_T(KC_)">LGUI_T()</button>
-                </div>
-                <div class="keycode-quick" id="layerKeycodes">
-                    <button class="keycode-btn" data-kc="MO(1)">MO(1)</button>
-                    <button class="keycode-btn" data-kc="MO(2)">MO(2)</button>
-                    <button class="keycode-btn" data-kc="MO(3)">MO(3)</button>
-                    <button class="keycode-btn" data-kc="TG(1)">TG(1)</button>
-                    <button class="keycode-btn" data-kc="TG(2)">TG(2)</button>
-                    <button class="keycode-btn" data-kc="TO(0)">TO(0)</button>
-                    <button class="keycode-btn" data-kc="TO(1)">TO(1)</button>
-                    <button class="keycode-btn" data-kc="LT(1,KC_)">LT(1,)</button>
-                    <button class="keycode-btn" data-kc="LT(2,KC_)">LT(2,)</button>
-                    <button class="keycode-btn" data-kc="OSL(1)">OSL(1)</button>
-                    <button class="keycode-btn" data-kc="KC_TRNS">_____</button>
-                    <button class="keycode-btn" data-kc="KC_NO">XXXXX</button>
-                </div>
-                <div class="keycode-quick" id="mediaKeycodes">
-                    <button class="keycode-btn" data-kc="KC_MUTE">Mute</button>
-                    <button class="keycode-btn" data-kc="KC_VOLU">Vol+</button>
-                    <button class="keycode-btn" data-kc="KC_VOLD">Vol-</button>
-                    <button class="keycode-btn" data-kc="KC_MPLY">Play</button>
-                    <button class="keycode-btn" data-kc="KC_MSTP">Stop</button>
-                    <button class="keycode-btn" data-kc="KC_MPRV">Prev</button>
-                    <button class="keycode-btn" data-kc="KC_MNXT">Next</button>
-                    <button class="keycode-btn" data-kc="KC_BRIU">Bright+</button>
-                    <button class="keycode-btn" data-kc="KC_BRID">Bright-</button>
-                </div>
-                <div class="keycode-quick" id="mouseKeycodes">
-                    <button class="keycode-btn" data-kc="KC_MS_U">M Up</button>
-                    <button class="keycode-btn" data-kc="KC_MS_D">M Down</button>
-                    <button class="keycode-btn" data-kc="KC_MS_L">M Left</button>
-                    <button class="keycode-btn" data-kc="KC_MS_R">M Right</button>
-                    <button class="keycode-btn" data-kc="KC_BTN1">M Btn1</button>
-                    <button class="keycode-btn" data-kc="KC_BTN2">M Btn2</button>
-                    <button class="keycode-btn" data-kc="KC_BTN3">M Btn3</button>
-                    <button class="keycode-btn" data-kc="KC_WH_U">Wheel Up</button>
-                    <button class="keycode-btn" data-kc="KC_WH_D">Wheel Dn</button>
-                </div>
-                <div class="keycode-quick" id="specialKeycodes">
-                    <button class="keycode-btn" data-kc="KC_F1">F1</button>
-                    <button class="keycode-btn" data-kc="KC_F2">F2</button>
-                    <button class="keycode-btn" data-kc="KC_F3">F3</button>
-                    <button class="keycode-btn" data-kc="KC_F4">F4</button>
-                    <button class="keycode-btn" data-kc="KC_F5">F5</button>
-                    <button class="keycode-btn" data-kc="KC_F6">F6</button>
-                    <button class="keycode-btn" data-kc="KC_F7">F7</button>
-                    <button class="keycode-btn" data-kc="KC_F8">F8</button>
-                    <button class="keycode-btn" data-kc="KC_F9">F9</button>
-                    <button class="keycode-btn" data-kc="KC_F10">F10</button>
-                    <button class="keycode-btn" data-kc="KC_F11">F11</button>
-                    <button class="keycode-btn" data-kc="KC_F12">F12</button>
-                    <button class="keycode-btn" data-kc="KC_PSCR">PrtSc</button>
-                    <button class="keycode-btn" data-kc="KC_SCRL">ScrLk</button>
-                    <button class="keycode-btn" data-kc="KC_PAUS">Pause</button>
-                    <button class="keycode-btn" data-kc="KC_INS">Ins</button>
-                    <button class="keycode-btn" data-kc="KC_DEL">Del</button>
-                    <button class="keycode-btn" data-kc="KC_HOME">Home</button>
-                    <button class="keycode-btn" data-kc="KC_END">End</button>
-                    <button class="keycode-btn" data-kc="KC_PGUP">PgUp</button>
-                    <button class="keycode-btn" data-kc="KC_PGDN">PgDn</button>
-                    <button class="keycode-btn" data-kc="KC_UP">↑</button>
-                    <button class="keycode-btn" data-kc="KC_DOWN">↓</button>
-                    <button class="keycode-btn" data-kc="KC_LEFT">←</button>
-                    <button class="keycode-btn" data-kc="KC_RGHT">→</button>
-                    <button class="keycode-btn" data-kc="QK_BOOT">BOOT</button>
-                    <button class="keycode-btn" data-kc="QK_RBT">REBOOT</button>
-                    <button class="keycode-btn" data-kc="RGB_TOG">RGB Tog</button>
-                    <button class="keycode-btn" data-kc="RGB_MOD">RGB Mode</button>
-                </div>
-            </div>
-            <div class="key-info">
-                <h3>📋 レイヤー情報</h3>
-                <div id="layerInfo">
-                    <p>現在のレイヤー: <strong id="currentLayerName">-</strong></p>
-                    <p>総キー数: <span id="totalKeys">0</span></p>
-                    <p>設定済み: <span id="configuredKeys">0</span></p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Notes Panel -->
-        <div class="panel notes-panel">
-            <div class="panel-title">📝 カスタム機能メモ</div>
-            
-            <div class="notes-section">
-                <h4>⚡ タップダンス</h4>
-                <div class="notes-grid" id="tapDanceNotes"></div>
-                <button class="add-note-btn" onclick="addNote('tapDance')">+ タップダンス追加</button>
-            </div>
-            
-            <div class="notes-section">
-                <h4>🔗 キーコンボ</h4>
-                <div class="notes-grid" id="comboNotes"></div>
-                <button class="add-note-btn" onclick="addNote('combo')">+ コンボ追加</button>
-            </div>
-            
-            <div class="notes-section">
-                <h4>📌 マクロ / その他</h4>
-                <div class="notes-grid" id="macroNotes"></div>
-                <button class="add-note-btn" onclick="addNote('macro')">+ メモ追加</button>
-            </div>
-        </div>
-
-        <!-- Actions & Output -->
-        <div class="panel">
-            <div class="panel-title">💾 保存・出力</div>
-            <div class="action-buttons">
-                <button class="btn btn-primary" onclick="downloadKeymap()">📥 keymap.c ダウンロード</button>
-                <button class="btn btn-secondary" onclick="previewKeymap()">👁️ プレビュー</button>
-                <button class="btn btn-secondary" onclick="saveToLocal()">💾 ブラウザに保存</button>
-                <button class="btn btn-secondary" onclick="loadFromLocal()">📂 保存データ読込</button>
-                <button class="btn btn-secondary" onclick="exportJson()">📤 JSON出力</button>
-                <button class="btn btn-danger" onclick="clearAll()">🗑️ 全クリア</button>
-            </div>
-            <div class="output-area" id="outputArea" style="display: none;">
-                <pre id="outputCode"></pre>
+    <div class="panel">
+        <div class="panel-title">⌨️ 編集エリア</div>
+        <div class="keyboard-wrapper">
+            <div class="keyboard-container" id="keyboardContainer">
+                <p style="color: #666; text-align: center; padding-top: 100px;">keyboard.jsonを読み込んでください</p>
             </div>
         </div>
     </div>
 
-    <script>
-        // ==================== GLOBAL STATE ====================
-        let layoutData = null;
-        let layoutName = '';
-        let layers = [];
-        let currentLayer = 0;
-        let selectedKey = null;
-        let keyColors = {
-            bg: '#3a3a4a',
-            text: '#ffffff',
-            border: '#444444'
-        };
-        let notes = {
-            tapDance: [],
-            combo: [],
-            macro: []
-        };
-        const SCALE = 58;
-        const MAX_LAYERS = 16;
-
-        // ==================== FILE LOADING ====================
-        function loadKeyboardJson(file) {
-            if (!file) return;
+    <div class="panel editor-panel" id="editorPanel">
+        <div class="key-info">
+            <h3 style="color:#00d4ff; margin-bottom:10px;">🔧 キー設定: <span id="selectedKeyId">-</span></h3>
+            <div class="key-input-group">
+                <label>キーコード</label>
+                <input type="text" id="keycodeInput" placeholder="KC_A" onchange="updateKeycode(this.value)">
+            </div>
             
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const json = JSON.parse(e.target.result);
-                    parseKeyboardJson(json);
-                    setStatus('keyboardJsonStatus', 'success', '✓ 読込完了: ' + (layoutData ? layoutData.length : 0) + 'キー');
-                } catch (err) {
-                    setStatus('keyboardJsonStatus', 'error', '✗ パースエラー: ' + err.message);
-                }
-            };
-            reader.readAsText(file);
-        }
+            <div style="margin-top:15px; padding:10px; background:rgba(255,255,255,0.03); border-radius:8px;">
+                <label style="font-size:0.8em; color:#888;">個別カラー設定</label>
+                <div class="color-settings" style="grid-template-columns: 1fr 1fr; margin-top:5px;">
+                    <div class="color-group">
+                        <label>背景</label>
+                        <input type="color" id="indivBgColor" onchange="updateIndividualColor('bg', this.value)">
+                    </div>
+                    <div class="color-group">
+                        <label>文字</label>
+                        <input type="color" id="indivTextColor" onchange="updateIndividualColor('text', this.value)">
+                    </div>
+                </div>
+                <button class="btn btn-secondary" style="width:100%; margin-top:5px; font-size:0.7em;" onclick="resetIndividualColor()">個別色をリセット</button>
+            </div>
+        </div>
 
-        function parseKeyboardJson(json) {
-            let layout = null;
-            layoutName = 'LAYOUT';
+        <div class="keycode-selector">
+            <div class="keycode-categories" id="kcCategories">
+                </div>
+            <div id="keycodeQuickContainer">
+                </div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-title">💾 保存・出力</div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="downloadKeymap()">📥 keymap.c 出力</button>
+            <button class="btn btn-secondary" onclick="saveToLocal()">💾 ブラウザ保存</button>
+            <button class="btn btn-secondary" onclick="loadFromLocal()">📂 保存データ読込</button>
+            <button class="btn btn-secondary" onclick="exportJson()">📤 JSON保存</button>
+        </div>
+    </div>
+</div>
+
+<div class="bottom-dock">
+    <div class="tab-nav">
+        <button class="tab-btn active" id="tabBtnColor" onclick="switchBottomTab('color')">🎨 全体カラー設定</button>
+        <button class="tab-btn" id="tabBtnFile" onclick="switchBottomTab('file')">📁 ファイル読み込み</button>
+    </div>
+
+    <div id="tabContentColor" class="tab-content active">
+        <div class="color-settings">
+            <div class="color-group">
+                <label>デフォルト背景</label>
+                <input type="color" id="keyBgColor" value="#3a3a4a" onchange="updateGlobalColors()">
+            </div>
+            <div class="color-group">
+                <label>デフォルト文字</label>
+                <input type="color" id="keyTextColor" value="#ffffff" onchange="updateGlobalColors()">
+            </div>
+            <div class="color-group">
+                <label>枠線色</label>
+                <input type="color" id="keyBorderColor" value="#444444" onchange="updateGlobalColors()">
+            </div>
+        </div>
+    </div>
+
+    <div id="tabContentFile" class="tab-content">
+        <div class="file-inputs">
+            <div class="file-group">
+                <label style="font-size:0.8em; color:#aaa;">keyboard.json</label>
+                <input type="file" accept=".json" onchange="loadKeyboardJson(this.files[0])">
+            </div>
+            <div class="file-group">
+                <label style="font-size:0.8em; color:#aaa;">keymap.c (既存読込)</label>
+                <input type="file" accept=".c" onchange="loadKeymapC(this.files[0])">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- 状態管理 ---
+    let layoutData = null;
+    let layers = [];
+    let currentLayer = 0;
+    let selectedKey = null; // キーID または "enc0_CCW" 等
+    let globalColors = { bg: '#3a3a4a', text: '#ffffff', border: '#444444' };
+    let individualColors = {}; // { keyId: { bg, text } }
+    const SCALE = 58;
+
+    const KC_CATEGORIES = {
+        'basic': { name: '基本', codes: ['KC_A','KC_B','KC_C','KC_D','KC_E','KC_F','KC_G','KC_H','KC_I','KC_J','KC_K','KC_L','KC_M','KC_N','KC_O','KC_P','KC_Q','KC_R','KC_S','KC_T','KC_U','KC_V','KC_W','KC_X','KC_Y','KC_Z','KC_1','KC_2','KC_3','KC_4','KC_5','KC_6','KC_7','KC_8','KC_9','KC_0','KC_ENT','KC_ESC','KC_BSPC','KC_TAB','KC_SPC'] },
+        'mod': { name: '修飾', codes: ['KC_LSFT','KC_RSFT','KC_LCTL','KC_RCTL','KC_LALT','KC_RALT','KC_LGUI','KC_RGUI','KC_CAPS'] },
+        'layer': { name: 'レイヤー', codes: ['MO(1)','MO(2)','TG(1)','TG(2)','TO(0)','LT(1,KC_SPC)','KC_TRNS','KC_NO'] },
+        'media': { name: 'メディア', codes: ['KC_MUTE','KC_VOLU','KC_VOLD','KC_MPLY','KC_MNXT','KC_MPRV'] }
+    };
+
+    // --- 初期化 ---
+    function init() {
+        renderCategories();
+        showCategory('basic');
+        window.addEventListener('keydown', handleGlobalKeyDown);
+    }
+
+    // --- ファイル読込 ---
+    function loadKeyboardJson(file) {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const json = JSON.parse(e.target.result);
+            let layout = json.layouts ? Object.values(json.layouts)[0].layout : (json.layout || []);
+            layoutData = layout.map((k, i) => ({ ...k, id: i }));
             
-            if (json.layouts) {
-                const layoutKeys = Object.keys(json.layouts);
-                if (layoutKeys.length > 0) {
-                    layoutName = layoutKeys[0];
-                    layout = json.layouts[layoutKeys[0]].layout;
-                }
-            } else if (json.layout) {
-                layout = json.layout;
-            }
-            
-            if (!layout) {
-                throw new Error('レイアウト情報が見つかりません');
-            }
-
-            layoutData = layout.map((key, index) => ({
-                id: index,
-                x: key.x,
-                y: key.y,
-                w: key.w || 1,
-                h: key.h || 1,
-                r: key.r || 0,
-                rx: key.rx || 0,
-                ry: key.ry || 0,
-                encoder: key.encoder !== undefined ? key.encoder : null
-            }));
-
             if (layers.length === 0) {
-                const defaultLayer = { name: 'Base', keys: {} };
-                layoutData.forEach(key => {
-                    defaultLayer.keys[key.id] = 'KC_NO';
-                });
-                layers = [defaultLayer];
-                currentLayer = 0;
+                layers = [{ name: 'Base', keys: {} }];
+                layoutData.forEach(k => layers[0].keys[k.id] = 'KC_NO');
             }
-
-            renderLayerTabs();
-            renderKeyboard();
+            renderAll();
             document.getElementById('editorPanel').classList.add('visible');
-        }
+            switchBottomTab('color');
+        };
+        reader.readAsText(file);
+    }
 
-        function loadKeymapC(file) {
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    parseKeymapC(e.target.result);
-                    setStatus('keymapCStatus', 'success', '✓ 読込完了: ' + layers.length + 'レイヤー');
-                } catch (err) {
-                    setStatus('keymapCStatus', 'error', '✗ パースエラー: ' + err.message);
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        function parseKeymapC(content) {
+    function loadKeymapC(file) {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const content = e.target.result;
             const layerRegex = /\[(\w+)\]\s*=\s*\w+\s*\(([\s\S]*?)\)(?=\s*,?\s*(?:\[|};))/g;
             const matches = [...content.matchAll(layerRegex)];
-            
-            if (matches.length === 0) {
-                throw new Error('レイヤー定義が見つかりません');
-            }
-
-            const newLayers = [];
-            matches.forEach((match, idx) => {
-                const layerName = match[1].replace(/^_/, '');
-                const keysStr = match[2];
-                const keycodes = keysStr.split(',').map(k => k.trim()).filter(k => k.length > 0);
-                
-                const layerObj = { name: layerName, keys: {} };
-                keycodes.forEach((kc, i) => {
-                    layerObj.keys[i] = kc;
+            if (matches.length > 0) {
+                layers = matches.map(m => {
+                    const keys = m[2].split(',').map(k => k.trim()).filter(k => k);
+                    const keyMap = {};
+                    keys.forEach((k, i) => keyMap[i] = k);
+                    return { name: m[1].replace(/^_/, ''), keys: keyMap };
                 });
-                newLayers.push(layerObj);
-            });
-
-            if (newLayers.length > 0) {
-                layers = newLayers;
                 currentLayer = 0;
-                renderLayerTabs();
-                renderKeyboard();
-                updateLayerBadge();
+                renderAll();
             }
-        }
+        };
+        reader.readAsText(file);
+    }
 
-        function setStatus(elementId, type, message) {
-            const el = document.getElementById(elementId);
-            el.textContent = message;
-            el.className = 'status ' + type;
-        }
-
-        // ==================== RENDERING ====================
-        function renderLayerTabs() {
-            const container = document.getElementById('layerTabs');
-            container.innerHTML = '';
-            
-            layers.forEach((layer, index) => {
-                const tab = document.createElement('div');
-                tab.className = 'layer-tab' + (index === currentLayer ? ' active' : '');
-                tab.innerHTML = `
-                    <span onclick="switchLayer(${index})">${layer.name}</span>
-                    <button class="delete-layer" onclick="event.stopPropagation(); deleteLayer(${index})">×</button>
-                `;
-                container.appendChild(tab);
-            });
-        }
-
-        function renderKeyboard() {
-            const container = document.getElementById('keyboardContainer');
-            container.innerHTML = '';
-            
-            if (!layoutData) {
-                container.innerHTML = '<p style="color: #666; text-align: center; padding: 50px;">keyboard.jsonを読み込んでください</p>';
-                return;
-            }
-
-            let minX = Infinity, maxX = -Infinity;
-            let minY = Infinity, maxY = -Infinity;
-
-            layoutData.forEach(key => {
-                minX = Math.min(minX, key.x);
-                maxX = Math.max(maxX, key.x + (key.w || 1));
-                minY = Math.min(minY, key.y);
-                maxY = Math.max(maxY, key.y + (key.h || 1));
-            });
-
-            const width = (maxX - minX) * SCALE + 40;
-            const height = (maxY - minY) * SCALE + 40;
-            
-            container.style.width = width + 'px';
-            container.style.height = height + 'px';
-
-            // エンコーダーをグループ化
-            const encoderGroups = {};
-            layoutData.forEach(key => {
-                if (key.encoder !== null && key.encoder !== undefined) {
-                    if (!encoderGroups[key.encoder]) {
-                        encoderGroups[key.encoder] = [];
-                    }
-                    encoderGroups[key.encoder].push(key);
-                }
-            });
-
-            // 通常キーを描画
-            layoutData.forEach(key => {
-                if (key.encoder !== null && key.encoder !== undefined) return;
-
-                const keyEl = createKeyElement(key, minX, minY);
-                container.appendChild(keyEl);
-            });
-
-            // エンコーダーグループを描画
-            Object.entries(encoderGroups).forEach(([encoderIndex, keys]) => {
-                renderEncoderGroup(container, keys, encoderIndex, minX, minY);
-            });
-
-            updateLayerInfo();
-        }
-
-        function renderEncoderGroup(container, keys, encoderIndex, minX, minY) {
-            // エンコーダーの位置を計算（最初のキーの位置を基準）
-            const baseKey = keys[0];
-            const groupX = (baseKey.x - minX) * SCALE + 20;
-            const groupY = (baseKey.y - minY) * SCALE + 20;
-
-            const group = document.createElement('div');
-            group.className = 'encoder-group';
-            group.style.left = groupX + 'px';
-            group.style.top = groupY + 'px';
-
-            // 3つのエンコーダー機能を表示
-            const encoderFunctions = [
-                { label: '左回転', suffix: '_CCW', offsetX: 0, offsetY: 0 },
-                { label: 'プッシュ', suffix: '_PUSH', offsetX: 45, offsetY: 0 },
-                { label: '右回転', suffix: '_CW', offsetX: 90, offsetY: 0 }
-            ];
-
-            encoderFunctions.forEach((func, idx) => {
-                const virtualKey = keys[idx] || keys[0];
-                const keyId = virtualKey.id;
-                
-                const keyEl = document.createElement('div');
-                keyEl.className = 'key encoder-key';
-                if (selectedKey === keyId + func.suffix) {
-                    keyEl.classList.add('selected');
-                }
-                
-                const w = 40;
-                const h = 40;
-                keyEl.style.width = w + 'px';
-                keyEl.style.height = h + 'px';
-                keyEl.style.position = 'absolute';
-                keyEl.style.left = func.offsetX + 'px';
-                keyEl.style.top = func.offsetY + 'px';
-                keyEl.style.background = `linear-gradient(145deg, ${keyColors.bg}, ${adjustColor(keyColors.bg, -20)})`;
-                keyEl.style.color = keyColors.text;
-                keyEl.style.borderColor = keyColors.border;
-
-                const layer = layers[currentLayer];
-                const encoderKeyId = `enc${encoderIndex}${func.suffix}`;
-                const keycode = layer && layer.keys[encoderKeyId] ? layer.keys[encoderKeyId] : 'KC_NO';
-                keyEl.textContent = formatKeycode(keycode);
-                keyEl.title = `Encoder ${encoderIndex} ${func.label}: ${keycode}`;
-
-                keyEl.onclick = () => selectEncoderKey(encoderIndex, func.suffix, encoderKeyId);
-                group.appendChild(keyEl);
-
-                // ラベル
-                const label = document.createElement('div');
-                label.className = 'encoder-label';
-                label.textContent = func.label;
-                label.style.position = 'absolute';
-                label.style.left = (func.offsetX + 5) + 'px';
-                label.style.top = '45px';
-                group.appendChild(label);
-            });
-
-            container.appendChild(group);
-        }
-
-        function createKeyElement(key, minX, minY) {
-            const keyEl = document.createElement('div');
-            keyEl.className = 'key';
-            if (selectedKey === key.id) {
-                keyEl.classList.add('selected');
-            }
-
-            const x = (key.x - minX) * SCALE + 20;
-            const y = (key.y - minY) * SCALE + 20;
-            const w = (key.w || 1) * SCALE - 4;
-            const h = (key.h || 1) * SCALE - 4;
-
-            keyEl.style.left = x + 'px';
-            keyEl.style.top = y + 'px';
-            keyEl.style.width = w + 'px';
-            keyEl.style.height = h + 'px';
-            keyEl.style.background = `linear-gradient(145deg, ${keyColors.bg}, ${adjustColor(keyColors.bg, -20)})`;
-            keyEl.style.color = keyColors.text;
-            keyEl.style.borderColor = keyColors.border;
-
-            if (key.r) {
-                const rx = (key.rx - minX) * SCALE + 20;
-                const ry = (key.ry - minY) * SCALE + 20;
-                keyEl.style.transformOrigin = `${rx - x}px ${ry - y}px`;
-                keyEl.style.transform = `rotate(${key.r}deg)`;
-            }
-
-            const layer = layers[currentLayer];
-            const keycode = layer && layer.keys[key.id] ? layer.keys[key.id] : 'KC_NO';
-            keyEl.textContent = formatKeycode(keycode);
-            keyEl.title = `Key ${key.id}: ${keycode}`;
-
-            keyEl.onclick = () => selectKey(key.id);
-
-            return keyEl;
-        }
-
-        function adjustColor(color, amount) {
-            const hex = color.replace('#', '');
-            const r = Math.max(0, Math.min(255, parseInt(hex.substr(0, 2), 16) + amount));
-            const g = Math.max(0, Math.min(255, parseInt(hex.substr(2, 2), 16) + amount));
-            const b = Math.max(0, Math.min(255, parseInt(hex.substr(4, 2), 16) + amount));
-            return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
-        }
-
-        function formatKeycode(kc) {
-            if (!kc) return '-';
-            if (kc === 'KC_TRNS' || kc === '_______') return '▽';
-            if (kc === 'KC_NO' || kc === 'XXXXXXX') return '✕';
-            return kc.replace('KC_', '').substring(0, 8);
-        }
-
-        function updateKeyColors() {
-            keyColors.bg = document.getElementById('keyBgColor').value;
-            keyColors.text = document.getElementById('keyTextColor').value;
-            keyColors.border = document.getElementById('keyBorderColor').value;
-            
-            const preview = document.getElementById('colorPreview');
-            preview.style.background = keyColors.bg;
-            preview.style.color = keyColors.text;
-            preview.style.border = `2px solid ${keyColors.border}`;
-            
-            renderKeyboard();
-        }
-
-        // ==================== KEY SELECTION & EDITING ====================
-        function selectKey(keyId) {
-            selectedKey = keyId;
-            document.getElementById('selectedKeyId').textContent = 'Key ' + keyId;
-            
-            const layer = layers[currentLayer];
-            const keycode = layer.keys[keyId] || 'KC_NO';
-            document.getElementById('keycodeInput').value = keycode;
-            
-            document.getElementById('editorPanel').classList.add('visible');
-            renderKeyboard();
-        }
-
-        function selectEncoderKey(encoderIndex, suffix, keyId) {
-            selectedKey = keyId;
-            document.getElementById('selectedKeyId').textContent = `Encoder ${encoderIndex} ${suffix}`;
-            
-            const layer = layers[currentLayer];
-            if (!layer.keys[keyId]) {
-                layer.keys[keyId] = 'KC_NO';
-            }
-            const keycode = layer.keys[keyId];
-            document.getElementById('keycodeInput').value = keycode;
-            
-            document.getElementById('editorPanel').classList.add('visible');
-            renderKeyboard();
-        }
-
-        function updateKeycode(value) {
-            if (selectedKey === null || !layers[currentLayer]) return;
-            layers[currentLayer].keys[selectedKey] = value;
-            renderKeyboard();
-        }
-
-        function switchLayer(index) {
-            currentLayer = index;
-            renderLayerTabs();
-            renderKeyboard();
-            updateLayerBadge();
-        }
-
-        function updateLayerBadge() {
-            const badge = document.getElementById('layerBadge');
-            if (layers[currentLayer]) {
-                badge.textContent = 'Layer: ' + layers[currentLayer].name;
-            }
-        }
-
-        function updateLayerInfo() {
-            if (!layers[currentLayer]) return;
-            
-            document.getElementById('currentLayerName').textContent = layers[currentLayer].name;
-            document.getElementById('totalKeys').textContent = layoutData ? layoutData.length : 0;
-            
-            const configured = Object.values(layers[currentLayer].keys).filter(k => k && k !== 'KC_NO' && k !== 'KC_TRNS').length;
-            document.getElementById('configuredKeys').textContent = configured;
-        }
-
-        function showCategory(category) {
-            document.querySelectorAll('.keycode-quick').forEach(el => el.classList.remove('visible'));
-            document.querySelectorAll('.category-btn').forEach(el => el.classList.remove('active'));
-            
-            document.getElementById(category + 'Keycodes').classList.add('visible');
-            event.target.classList.add('active');
-        }
-
-        function previewKeymap() {
-            const content = generateKeymapC();
-            if (!content) return;
-            
-            document.getElementById('outputCode').textContent = content;
-            document.getElementById('outputArea').style.display = 'block';
-        }
-
-        // ==================== NOTES MANAGEMENT ====================
-        function addNote(type) {
-            const note = {
-                id: Date.now(),
-                name: '',
-                description: ''
-            };
-            notes[type].push(note);
-            renderNotes(type);
-        }
-
-        function deleteNote(type, id) {
-            notes[type] = notes[type].filter(n => n.id !== id);
-            renderNotes(type);
-        }
-
-        function updateNote(type, id, field, value) {
-            const note = notes[type].find(n => n.id === id);
-            if (note) {
-                note[field] = value;
-            }
-        }
-
-        function renderNotes(type) {
-            const container = document.getElementById(type + 'Notes');
-            container.innerHTML = '';
-            
-            notes[type].forEach(note => {
-                const item = document.createElement('div');
-                item.className = 'note-item';
-                item.innerHTML = `
-                    <input type="text" placeholder="名前 (例: TD_ESC)" value="${note.name}" 
-                           onchange="updateNote('${type}', ${note.id}, 'name', this.value)">
-                    <input type="text" placeholder="説明 (例: 1回タップ=Esc, 2回タップ=CapsLock)" value="${note.description}"
-                           onchange="updateNote('${type}', ${note.id}, 'description', this.value)">
-                    <button class="delete-note" onclick="deleteNote('${type}', ${note.id})">×</button>
-                `;
-                container.appendChild(item);
-            });
-        }
-
-        // Initialize notes
-        renderNotes('tapDance');
-        renderNotes('combo');
-        renderNotes('macro');
-
-        // ==================== LAYER MANAGEMENT ====================
-        function addLayer() {
-            if (!layoutData) {
-                alert('先にkeyboard.jsonを読み込んでください');
-                return;
-            }
-            
-            if (layers.length >= MAX_LAYERS) {
-                alert(`最大${MAX_LAYERS}レイヤーまでです`);
-                return;
-            }
-            
-            const name = prompt('新しいレイヤーの名前:', `Layer${layers.length}`);
-            if (name) {
-                const newLayer = { name, keys: {} };
-                layoutData.forEach(key => {
-                    newLayer.keys[key.id] = 'KC_TRNS';
-                });
-                layers.push(newLayer);
-                switchLayer(layers.length - 1);
-                updateLayerBadge();
-            }
-        }
-
-        function deleteLayer(index) {
-            if (layers.length <= 1) {
-                alert('最低1つのレイヤーが必要です');
-                return;
-            }
-            if (confirm(`"${layers[index].name}" を削除しますか？`)) {
-                layers.splice(index, 1);
-                if (currentLayer >= layers.length) {
-                    currentLayer = layers.length - 1;
-                }
-                renderLayerTabs();
-                renderKeyboard();
-                updateLayerBadge();
-            }
-        }
-
-        function clearAll() {
-            if (confirm('全てのデータをクリアしますか？')) {
-                layoutData = null;
-                layoutName = '';
-                layers = [];
-                currentLayer = 0;
-                selectedKey = null;
-                notes = { tapDance: [], combo: [], macro: [] };
-                document.getElementById('keyboardJsonFile').value = '';
-                document.getElementById('keymapCFile').value = '';
-                document.getElementById('keyboardJsonStatus').textContent = '';
-                document.getElementById('keymapCStatus').textContent = '';
-                document.getElementById('editorPanel').classList.remove('visible');
-                renderLayerTabs();
-                renderKeyboard();
-                updateLayerBadge();
-                renderNotes('tapDance');
-                renderNotes('combo');
-                renderNotes('macro');
-            }
-        }
-
-        // ==================== SAVE / LOAD ====================
-        function saveToLocal() {
-            const data = {
-                layoutData,
-                layoutName,
-                layers,
-                keyColors,
-                notes
-            };
-            localStorage.setItem('qmk-keymap-editor', JSON.stringify(data));
-            alert('保存しました！');
-        }
-
-        function loadFromLocal() {
-            const saved = localStorage.getItem('qmk-keymap-editor');
-            if (saved) {
-                const data = JSON.parse(saved);
-                layoutData = data.layoutData;
-                layoutName = data.layoutName || 'LAYOUT';
-                layers = data.layers;
-                keyColors = data.keyColors || { bg: '#3a3a4a', text: '#ffffff', border: '#444444' };
-                notes = data.notes || { tapDance: [], combo: [], macro: [] };
-                currentLayer = 0;
-                
-                document.getElementById('keyBgColor').value = keyColors.bg;
-                document.getElementById('keyTextColor').value = keyColors.text;
-                document.getElementById('keyBorderColor').value = keyColors.border;
-                updateKeyColors();
-                
-                setStatus('keyboardJsonStatus', 'success', '✓ 保存データ読込');
-                renderLayerTabs();
-                renderKeyboard();
-                updateLayerBadge();
-                renderNotes('tapDance');
-                renderNotes('combo');
-                renderNotes('macro');
-                alert('読み込みました！');
-            } else {
-                alert('保存されたデータがありません');
-            }
-        }
-
-        function exportJson() {
-            const data = {
-                layoutData,
-                layoutName,
-                layers,
-                keyColors,
-                notes
-            };
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            downloadBlob(blob, 'keymap-data.json');
-        }
-
-        // ==================== KEYMAP.C GENERATION ====================
-        function generateKeymapC() {
-            if (!layoutData || layers.length === 0) {
-                alert('レイアウトとキーマップを読み込んでください');
-                return null;
-            }
-
-            const layoutMacro = layoutName || 'LAYOUT';
-            
-            let output = `// Generated by QMK Keymap Editor
-// ${new Date().toLocaleString()}
-
-#include QMK_KEYBOARD_H
-
-enum layers {
-${layers.map((l, i) => `    _${l.name.toUpperCase().replace(/[^A-Z0-9]/g, '_')} = ${i}`).join(',\n')}
-};
-
-`;
-            // タップダンスのメモを追加
-            if (notes.tapDance.length > 0) {
-                output += `// Tap Dance Definitions\n`;
-                notes.tapDance.forEach(note => {
-                    if (note.name) {
-                        output += `// ${note.name}: ${note.description}\n`;
-                    }
-                });
-                output += '\n';
-            }
-
-            // コンボのメモを追加
-            if (notes.combo.length > 0) {
-                output += `// Combo Definitions\n`;
-                notes.combo.forEach(note => {
-                    if (note.name) {
-                        output += `// ${note.name}: ${note.description}\n`;
-                    }
-                });
-                output += '\n';
-            }
-
-            // マクロのメモを追加
-            if (notes.macro.length > 0) {
-                output += `// Macro / Other Notes\n`;
-                notes.macro.forEach(note => {
-                    if (note.name) {
-                        output += `// ${note.name}: ${note.description}\n`;
-                    }
-                });
-                output += '\n';
-            }
-
-            output += `const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-`;
-
-            layers.forEach((layer, layerIndex) => {
-                const layerNameClean = layer.name.toUpperCase().replace(/[^A-Z0-9]/g, '_');
-                output += `    [_${layerNameClean}] = ${layoutMacro}(\n`;
-                
-                const keyOrder = layoutData.map(k => k.id);
-                const keycodes = keyOrder.map(id => layer.keys[id] || 'KC_NO');
-                
-                const chunkSize = 10;
-                for (let i = 0; i < keycodes.length; i += chunkSize) {
-                    const chunk = keycodes.slice(i, i + chunkSize);
-                    const isLastChunk = i + chunkSize >= keycodes.length;
-                    output += '        ' + chunk.join(', ');
-                    if (!isLastChunk) output += ',';
-                    output += '\n';
-                }
-                
-                output += `    )${layerIndex < layers.length - 1 ? ',' : ''}\n`;
-            });
-
-            output += `};
-`;
-            return output;
-        }
-
-        function downloadKeymap() {
-            const content = generateKeymapC();
-            if (!content) return;
-            
-            const blob = new Blob([content], { type: 'text/plain' });
-            downloadBlob(blob, 'keymap.c');
-        }
-
-        function downloadBlob(blob, filename) {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        // ==================== EVENT LISTENERS ====================
-        document.querySelectorAll('.keycode-quick').forEach(container => {
-            container.addEventListener('click', (e) => {
-                if (e.target.classList.contains('keycode-btn')) {
-                    document.getElementById('keycodeInput').value = e.target.dataset.kc;
-                    updateKeycode(e.target.dataset.kc);
-                }
-            });
-        });
-
-        // Initialize color preview
-        updateKeyColors();
-
-        // Initialize
+    // --- レンダリング ---
+    function renderAll() {
         renderLayerTabs();
         renderKeyboard();
         updateLayerBadge();
-    </script>
+    }
+
+    function renderKeyboard() {
+        const container = document.getElementById('keyboardContainer');
+        container.innerHTML = '';
+        if (!layoutData) return;
+
+        let maxX = 0, maxY = 0;
+        layoutData.forEach(key => {
+            if (key.encoder !== undefined && key.encoder !== null) {
+                renderEncoder(container, key);
+            } else {
+                const keyEl = document.createElement('div');
+                keyEl.className = `key ${selectedKey === key.id ? 'selected' : ''}`;
+                
+                // スタイル計算
+                const custom = individualColors[key.id] || {};
+                keyEl.style.left = (key.x * SCALE) + 'px';
+                keyEl.style.top = (key.y * SCALE) + 'px';
+                keyEl.style.width = ((key.w || 1) * SCALE - 4) + 'px';
+                keyEl.style.height = ((key.h || 1) * SCALE - 4) + 'px';
+                keyEl.style.backgroundColor = custom.bg || globalColors.bg;
+                keyEl.style.color = custom.text || globalColors.text;
+                keyEl.style.border = `1px solid ${globalColors.border}`;
+
+                const kc = layers[currentLayer].keys[key.id] || 'KC_NO';
+                keyEl.textContent = kc.replace('KC_', '');
+                keyEl.onclick = () => selectKey(key.id);
+                container.appendChild(keyEl);
+            }
+            maxX = Math.max(maxX, key.x + (key.w || 1));
+            maxY = Math.max(maxY, key.y + (key.h || 1));
+        });
+
+        container.style.width = (maxX * SCALE + 40) + 'px';
+        container.style.height = (maxY * SCALE + 40) + 'px';
+    }
+
+    function renderEncoder(container, key) {
+        const suffixes = ['_CCW', '_PUSH', '_CW'];
+        const labels = ['↺', '●', '↻'];
+        
+        suffixes.forEach((suffix, i) => {
+            const encId = `enc${key.encoder}${suffix}`;
+            const keyEl = document.createElement('div');
+            keyEl.className = `key encoder-key ${selectedKey === encId ? 'selected' : ''}`;
+            keyEl.style.left = (key.x * SCALE + (i * 35)) + 'px';
+            keyEl.style.top = (key.y * SCALE) + 'px';
+            keyEl.style.width = '30px';
+            keyEl.style.height = '30px';
+            
+            const custom = individualColors[encId] || {};
+            keyEl.style.backgroundColor = custom.bg || '#222';
+            keyEl.style.color = custom.text || '#00d4ff';
+            keyEl.style.border = `1px solid ${globalColors.border}`;
+            
+            keyEl.textContent = labels[i];
+            keyEl.onclick = () => selectKey(encId);
+            container.appendChild(keyEl);
+        });
+    }
+
+    // --- キー選択とナビゲーション ---
+    function selectKey(id) {
+        selectedKey = id;
+        document.getElementById('selectedKeyId').textContent = id;
+        
+        const kc = layers[currentLayer].keys[id] || 'KC_NO';
+        document.getElementById('keycodeInput').value = kc;
+        
+        const custom = individualColors[id] || {};
+        document.getElementById('indivBgColor').value = custom.bg || globalColors.bg;
+        document.getElementById('indivTextColor').value = custom.text || globalColors.text;
+
+        renderKeyboard();
+    }
+
+    function handleGlobalKeyDown(e) {
+        if (selectedKey === null || document.activeElement.tagName === 'INPUT') return;
+
+        // 矢印キーでの移動ロジック
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+            e.preventDefault();
+            const current = layoutData.find(k => k.id === selectedKey);
+            if (!current) return;
+
+            let target = null;
+            let minDist = Infinity;
+
+            layoutData.forEach(key => {
+                if (key.id === selectedKey) return;
+                const dx = key.x - current.x;
+                const dy = key.y - current.y;
+
+                let isDirection = false;
+                if (e.key === 'ArrowRight' && dx > 0.1 && Math.abs(dy) < 0.8) isDirection = true;
+                if (e.key === 'ArrowLeft' && dx < -0.1 && Math.abs(dy) < 0.8) isDirection = true;
+                if (e.key === 'ArrowDown' && dy > 0.1 && Math.abs(dx) < 0.8) isDirection = true;
+                if (e.key === 'ArrowUp' && dy < -0.1 && Math.abs(dx) < 0.8) isDirection = true;
+
+                if (isDirection) {
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < minDist) { minDist = dist; target = key.id; }
+                }
+            });
+
+            if (target !== null) selectKey(target);
+        }
+    }
+
+    // --- カラー管理 ---
+    function updateGlobalColors() {
+        globalColors.bg = document.getElementById('keyBgColor').value;
+        globalColors.text = document.getElementById('keyTextColor').value;
+        globalColors.border = document.getElementById('keyBorderColor').value;
+        renderKeyboard();
+    }
+
+    function updateIndividualColor(type, value) {
+        if (selectedKey === null) return;
+        if (!individualColors[selectedKey]) individualColors[selectedKey] = {};
+        individualColors[selectedKey][type] = value;
+        renderKeyboard();
+    }
+
+    function resetIndividualColor() {
+        if (selectedKey === null) return;
+        delete individualColors[selectedKey];
+        selectKey(selectedKey);
+        renderKeyboard();
+    }
+
+    // --- UI制御 ---
+    function switchBottomTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tabContent' + tabId.charAt(0).toUpperCase() + tabId.slice(1)).classList.add('active');
+        document.getElementById('tabBtn' + tabId.charAt(0).toUpperCase() + tabId.slice(1)).classList.add('active');
+    }
+
+    function renderCategories() {
+        const container = document.getElementById('kcCategories');
+        Object.keys(KC_CATEGORIES).forEach(cat => {
+            const btn = document.createElement('button');
+            btn.className = 'category-btn';
+            btn.id = 'catBtn-' + cat;
+            btn.textContent = KC_CATEGORIES[cat].name;
+            btn.onclick = () => showCategory(cat);
+            container.appendChild(btn);
+        });
+    }
+
+    function showCategory(catId) {
+        document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('catBtn-' + catId).classList.add('active');
+        
+        const container = document.getElementById('keycodeQuickContainer');
+        container.innerHTML = '';
+        const quickDiv = document.createElement('div');
+        quickDiv.className = 'keycode-quick visible';
+        
+        KC_CATEGORIES[catId].codes.forEach(code => {
+            const btn = document.createElement('button');
+            btn.className = 'keycode-btn';
+            btn.textContent = code.replace('KC_', '');
+            btn.onclick = () => {
+                document.getElementById('keycodeInput').value = code;
+                updateKeycode(code);
+            };
+            quickDiv.appendChild(btn);
+        });
+        container.appendChild(quickDiv);
+    }
+
+    function updateKeycode(val) {
+        if (selectedKey !== null) {
+            layers[currentLayer].keys[selectedKey] = val;
+            renderKeyboard();
+        }
+    }
+
+    function renderLayerTabs() {
+        const container = document.getElementById('layerTabs');
+        container.innerHTML = '';
+        layers.forEach((l, i) => {
+            const tab = document.createElement('div');
+            tab.className = `layer-tab ${i === currentLayer ? 'active' : ''}`;
+            tab.innerHTML = `<span onclick="switchLayer(${i})">${l.name}</span><span style="margin-left:5px;opacity:0.5" onclick="deleteLayer(${i})">×</span>`;
+            container.appendChild(tab);
+        });
+    }
+
+    function switchLayer(i) { currentLayer = i; renderAll(); }
+    function addLayer() {
+        const name = `Layer ${layers.length}`;
+        const newKeys = {};
+        layoutData.forEach(k => newKeys[k.id] = 'KC_TRNS');
+        layers.push({ name, keys: newKeys });
+        renderAll();
+    }
+    function updateLayerBadge() { document.getElementById('layerBadge').textContent = 'Layer: ' + layers[currentLayer].name; }
+
+    // --- 書き出し ---
+    function downloadKeymap() {
+        if (!layoutData) return alert('データを読み込んでください');
+        let c = `#include QMK_KEYBOARD_H\n\nconst uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {\n`;
+        layers.forEach((layer, i) => {
+            c += `  [${i}] = LAYOUT(\n    `;
+            const keys = layoutData.map(k => layer.keys[k.id] || 'KC_NO');
+            c += keys.join(', ');
+            c += `\n  ),\n`;
+        });
+        c += `};`;
+        const blob = new Blob([c], {type: 'text/plain'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'keymap.c'; a.click();
+    }
+
+    function saveToLocal() {
+        const data = { layoutData, layers, individualColors, globalColors };
+        localStorage.setItem('qmk_editor_data', JSON.stringify(data));
+        alert('保存しました');
+    }
+
+    function loadFromLocal() {
+        const saved = localStorage.getItem('qmk_editor_data');
+        if (saved) {
+            const data = JSON.parse(saved);
+            layoutData = data.layoutData;
+            layers = data.layers;
+            individualColors = data.individualColors || {};
+            globalColors = data.globalColors || globalColors;
+            renderAll();
+            document.getElementById('editorPanel').classList.add('visible');
+        }
+    }
+
+    function exportJson() {
+        const data = { layers, individualColors, globalColors };
+        const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob); a.download = 'keymap_config.json'; a.click();
+    }
+
+    init();
+</script>
+
 </body>
 </html>
