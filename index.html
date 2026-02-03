@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8" />
-<title>Q1 HE Keymap Editor</title>
+<title>Keychron Q1 HE Keymap Editor</title>
 
 <style>
 body{
@@ -10,237 +10,146 @@ body{
     color:#eee;
     font-family:sans-serif;
     padding:20px;
-}
-
-h1{
     text-align:center;
-    color:#00d4ff;
 }
 
-/* ===== レイヤータブ ===== */
-.layer-tabs{
-    text-align:center;
-    margin-bottom:20px;
-}
-.layer-tab{
-    padding:8px 16px;
-    margin:4px;
-    background:#333;
-    border:none;
-    color:white;
-    border-radius:6px;
-    cursor:pointer;
-}
-.layer-tab.active{
-    background:#00d4ff;
-    color:black;
-}
-
-/* ===== キーボード描画（absolute方式 ⭐重要） ===== */
+/* ===== keyboard ===== */
 .keyboard{
     position:relative;
-    width:900px;
-    height:350px;
-    margin:auto;
+    margin:20px auto;
     background:#2d2d44;
     border-radius:12px;
 }
 
 .key{
     position:absolute;
-    height:50px;
+    height:48px;
     background:#3a3a50;
     border:1px solid #555;
     border-radius:6px;
+    font-size:10px;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:11px;
     cursor:pointer;
+    user-select:none;
+}
+.key:hover{background:#555;}
+.selected{background:#00d4ff;color:#000;}
+.transparent{opacity:.35;}
+
+.tabs button{
+    margin:3px;
+    padding:6px 12px;
 }
 
-.key:hover{
-    background:#4a4a60;
-}
-
-.key.selected{
-    background:#00d4ff;
-    color:black;
-}
-
-.transparent{ opacity:.4; }
-.modifier{ background:#4a3a50; }
-.layer-key{ background:#2f5a5a; }
-
-/* ===== エディタ ===== */
 .editor{
-    max-width:500px;
-    margin:30px auto;
-}
-input{
-    width:100%;
-    padding:8px;
-    margin-top:6px;
-}
-button{
-    padding:8px 12px;
-    margin-top:8px;
+    margin-top:15px;
 }
 </style>
 </head>
+
 <body>
 
-<h1>⌨️ Keychron Q1 HE Keymap Editor</h1>
+<h2>⌨️ Q1 HE Keymap Editor</h2>
 
-<div class="layer-tabs" id="tabs"></div>
+<div id="tabs" class="tabs"></div>
+<div id="keyboard" class="keyboard"></div>
 
-<div class="keyboard" id="keyboard"></div>
-
-<div class="editor" id="editor" style="display:none;">
-    <input id="keyInput"/>
-    <button onclick="applyKey()">適用</button>
+<div class="editor">
+<input id="keyInput" placeholder="KC_A など">
+<button onclick="applyKey()">変更</button>
+<button onclick="downloadKeymap()">keymap.c DL</button>
+<button onclick="saveJson()">保存</button>
+<input type="file" onchange="loadJson(event)">
 </div>
 
 <script>
-/* ===============================
-   ⭐ QMK keyboard.json（あなたの貼った内容）
-   =============================== */
-const QMK_JSON = {
-"layouts":{"LAYOUT_ansi_82":{"layout":[
-{"matrix":[0,0],"x":0,"y":0},
-{"matrix":[0,1],"x":1.25,"y":0},
-{"matrix":[0,2],"x":2.25,"y":0},
-{"matrix":[0,3],"x":3.25,"y":0},
-{"matrix":[0,4],"x":4.25,"y":0},
-{"matrix":[0,5],"x":5.5,"y":0},
-{"matrix":[0,6],"x":6.5,"y":0},
-{"matrix":[0,7],"x":7.5,"y":0},
-{"matrix":[0,8],"x":8.5,"y":0},
-{"matrix":[0,9],"x":9.75,"y":0},
-{"matrix":[0,10],"x":10.75,"y":0},
-{"matrix":[0,11],"x":11.75,"y":0},
-{"matrix":[0,12],"x":12.75,"y":0},
-{"matrix":[0,13],"x":14,"y":0},
-{"matrix":[0,14],"x":15.25,"y":0},
+const KEY_SIZE = 48;
 
-{"matrix":[1,0],"x":0,"y":1.25},
-{"matrix":[1,1],"x":1,"y":1.25},
-{"matrix":[1,2],"x":2,"y":1.25},
-{"matrix":[1,3],"x":3,"y":1.25},
-{"matrix":[1,4],"x":4,"y":1.25},
-{"matrix":[1,5],"x":5,"y":1.25},
-{"matrix":[1,6],"x":6,"y":1.25},
-{"matrix":[1,7],"x":7,"y":1.25},
-{"matrix":[1,8],"x":8,"y":1.25},
-{"matrix":[1,9],"x":9,"y":1.25},
-{"matrix":[1,10],"x":10,"y":1.25},
-{"matrix":[1,11],"x":11,"y":1.25},
-{"matrix":[1,12],"x":12,"y":1.25},
-{"matrix":[1,13],"x":13,"y":1.25,"w":2},
-{"matrix":[1,14],"x":15.25,"y":1.25},
+/* =============================
+   レイアウト座標（QMKそのまま）
+============================= */
+const rawLayout = [
+{"m":[0,0],"x":0,"y":0},{"m":[0,1],"x":1.25,"y":0},{"m":[0,2],"x":2.25,"y":0},{"m":[0,3],"x":3.25,"y":0},{"m":[0,4],"x":4.25,"y":0},{"m":[0,5],"x":5.5,"y":0},{"m":[0,6],"x":6.5,"y":0},{"m":[0,7],"x":7.5,"y":0},{"m":[0,8],"x":8.5,"y":0},{"m":[0,9],"x":9.75,"y":0},{"m":[0,10],"x":10.75,"y":0},{"m":[0,11],"x":11.75,"y":0},{"m":[0,12],"x":12.75,"y":0},{"m":[0,13],"x":14,"y":0},{"m":[0,14],"x":15.25,"y":0},
 
-{"matrix":[2,0],"x":0,"y":2.25,"w":1.5},
-{"matrix":[2,1],"x":1.5,"y":2.25},
-{"matrix":[2,2],"x":2.5,"y":2.25},
-{"matrix":[2,3],"x":3.5,"y":2.25},
-{"matrix":[2,4],"x":4.5,"y":2.25},
-{"matrix":[2,5],"x":5.5,"y":2.25},
-{"matrix":[2,6],"x":6.5,"y":2.25},
-{"matrix":[2,7],"x":7.5,"y":2.25},
-{"matrix":[2,8],"x":8.5,"y":2.25},
-{"matrix":[2,9],"x":9.5,"y":2.25},
-{"matrix":[2,10],"x":10.5,"y":2.25},
-{"matrix":[2,11],"x":11.5,"y":2.25},
-{"matrix":[2,12],"x":12.5,"y":2.25},
-{"matrix":[2,13],"x":13.5,"y":2.25,"w":1.5},
-{"matrix":[2,14],"x":15.25,"y":2.25},
+{"m":[1,0],"x":0,"y":1.25},{"m":[1,1],"x":1,"y":1.25},{"m":[1,2],"x":2,"y":1.25},{"m":[1,3],"x":3,"y":1.25},{"m":[1,4],"x":4,"y":1.25},{"m":[1,5],"x":5,"y":1.25},{"m":[1,6],"x":6,"y":1.25},{"m":[1,7],"x":7,"y":1.25},{"m":[1,8],"x":8,"y":1.25},{"m":[1,9],"x":9,"y":1.25},{"m":[1,10],"x":10,"y":1.25},{"m":[1,11],"x":11,"y":1.25},{"m":[1,12],"x":12,"y":1.25},{"m":[1,13],"x":13,"y":1.25,"w":2},{"m":[1,14],"x":15.25,"y":1.25},
 
-{"matrix":[3,0],"x":0,"y":3.25,"w":1.75},
-{"matrix":[3,1],"x":1.75,"y":3.25},
-{"matrix":[3,2],"x":2.75,"y":3.25},
-{"matrix":[3,3],"x":3.75,"y":3.25},
-{"matrix":[3,4],"x":4.75,"y":3.25},
-{"matrix":[3,5],"x":5.75,"y":3.25},
-{"matrix":[3,6],"x":6.75,"y":3.25},
-{"matrix":[3,7],"x":7.75,"y":3.25},
-{"matrix":[3,8],"x":8.75,"y":3.25},
-{"matrix":[3,9],"x":9.75,"y":3.25},
-{"matrix":[3,10],"x":10.75,"y":3.25},
-{"matrix":[3,11],"x":11.75,"y":3.25},
-{"matrix":[3,12],"x":12.75,"y":3.25,"w":2.25},
-{"matrix":[3,13],"x":15.25,"y":3.25},
+{"m":[2,0],"x":0,"y":2.25,"w":1.5},{"m":[2,1],"x":1.5,"y":2.25},{"m":[2,2],"x":2.5,"y":2.25},{"m":[2,3],"x":3.5,"y":2.25},{"m":[2,4],"x":4.5,"y":2.25},{"m":[2,5],"x":5.5,"y":2.25},{"m":[2,6],"x":6.5,"y":2.25},{"m":[2,7],"x":7.5,"y":2.25},{"m":[2,8],"x":8.5,"y":2.25},{"m":[2,9],"x":9.5,"y":2.25},{"m":[2,10],"x":10.5,"y":2.25},{"m":[2,11],"x":11.5,"y":2.25},{"m":[2,12],"x":12.5,"y":2.25},{"m":[2,13],"x":13.5,"y":2.25,"w":1.5},{"m":[2,14],"x":15.25,"y":2.25}
+];
 
-{"matrix":[4,0],"x":0,"y":4.25,"w":2.25},
-{"matrix":[4,2],"x":2.25,"y":4.25},
-{"matrix":[4,3],"x":3.25,"y":4.25},
-{"matrix":[4,4],"x":4.25,"y":4.25},
-{"matrix":[4,5],"x":5.25,"y":4.25},
-{"matrix":[4,6],"x":6.25,"y":4.25},
-{"matrix":[4,7],"x":7.25,"y":4.25},
-{"matrix":[4,8],"x":8.25,"y":4.25},
-{"matrix":[4,9],"x":9.25,"y":4.25},
-{"matrix":[4,10],"x":10.25,"y":4.25},
-{"matrix":[4,12],"x":11.25,"y":4.25},
-{"matrix":[4,13],"x":12.25,"y":4.25,"w":1.75},
-{"matrix":[4,14],"x":14.25,"y":4.5},
+/* ===== 残りの座標 ===== */
+rawLayout.push(
+{"m":[3,0],"x":0,"y":3.25,"w":1.75},{"m":[3,1],"x":1.75,"y":3.25},{"m":[3,2],"x":2.75,"y":3.25},{"m":[3,3],"x":3.75,"y":3.25},{"m":[3,4],"x":4.75,"y":3.25},{"m":[3,5],"x":5.75,"y":3.25},{"m":[3,6],"x":6.75,"y":3.25},{"m":[3,7],"x":7.75,"y":3.25},{"m":[3,8],"x":8.75,"y":3.25},{"m":[3,9],"x":9.75,"y":3.25},{"m":[3,10],"x":10.75,"y":3.25},{"m":[3,11],"x":11.75,"y":3.25},{"m":[3,12],"x":12.75,"y":3.25,"w":2.25},{"m":[3,13],"x":15.25,"y":3.25},
 
-{"matrix":[5,0],"x":0,"y":5.25,"w":1.25},
-{"matrix":[5,1],"x":1.25,"y":5.25,"w":1.25},
-{"matrix":[5,2],"x":2.5,"y":5.25,"w":1.25},
-{"matrix":[5,6],"x":3.75,"y":5.25,"w":6.25},
-{"matrix":[5,9],"x":10,"y":5.25},
-{"matrix":[5,10],"x":11,"y":5.25},
-{"matrix":[5,11],"x":12,"y":5.25},
-{"matrix":[5,12],"x":13.25,"y":5.5},
-{"matrix":[5,13],"x":14.25,"y":5.5},
-{"matrix":[5,14],"x":15.25,"y":5.5}
-]}}
-};
+{"m":[4,0],"x":0,"y":4.25,"w":2.25},{"m":[4,2],"x":2.25,"y":4.25},{"m":[4,3],"x":3.25,"y":4.25},{"m":[4,4],"x":4.25,"y":4.25},{"m":[4,5],"x":5.25,"y":4.25},{"m":[4,6],"x":6.25,"y":4.25},{"m":[4,7],"x":7.25,"y":4.25},{"m":[4,8],"x":8.25,"y":4.25},{"m":[4,9],"x":9.25,"y":4.25},{"m":[4,10],"x":10.25,"y":4.25},{"m":[4,12],"x":11.25,"y":4.25},{"m":[4,13],"x":12.25,"y":4.25,"w":1.75},{"m":[4,14],"x":14.25,"y":4.5},
+
+{"m":[5,0],"x":0,"y":5.25,"w":1.25},{"m":[5,1],"x":1.25,"y":5.25,"w":1.25},{"m":[5,2],"x":2.5,"y":5.25,"w":1.25},{"m":[5,6],"x":3.75,"y":5.25,"w":6.25},{"m":[5,9],"x":10,"y":5.25},{"m":[5,10],"x":11,"y":5.25},{"m":[5,11],"x":12,"y":5.25},{"m":[5,12],"x":13.25,"y":5.5},{"m":[5,13],"x":14.25,"y":5.5},{"m":[5,14],"x":15.25,"y":5.5}
+);
 
 /* ===== レイアウト生成 ===== */
-const KEY_SIZE = 50;
-
-const LAYOUT =
-QMK_JSON.layouts.LAYOUT_ansi_82.layout.map(k=>({
-    id:`k${k.matrix[0]}_${k.matrix[1]}`,
+const LAYOUT = rawLayout.map(k=>({
+    id:`k${k.m[0]}_${k.m[1]}`,
     x:k.x,
     y:k.y,
     w:k.w||1
 }));
 
-/* ===== レイヤー ===== */
-let layers=[{name:"Base",keys:{}}];
+/* 余白ゼロ自動サイズ */
+const maxX = Math.max(...LAYOUT.map(k=>k.x+(k.w||1)));
+const maxY = Math.max(...LAYOUT.map(k=>k.y+1));
+const keyboardDiv = document.getElementById("keyboard");
+keyboardDiv.style.width  = maxX*KEY_SIZE+"px";
+keyboardDiv.style.height = maxY*KEY_SIZE+"px";
+
+/* =============================
+   ⭐ デフォルト4レイヤー（あなたのkeymap.c）
+============================= */
+
+const LAYER_NAMES = ["MAC_BASE","MAC_FN","WIN_BASE","WIN_FN"];
+
+const defaultLayers = [
+["KC_ESC","KC_BRID","KC_BRIU","KC_MCTRL","KC_LNPAD","UG_VALD","UG_VALU","KC_MPRV","KC_MPLY","KC_MNXT","KC_MUTE","KC_VOLD","KC_VOLU","KC_DEL","KC_MUTE"],
+["KC_GRV","KC_1","KC_2","KC_3","KC_4","KC_5","KC_6","KC_7","KC_8","KC_9","KC_0","KC_MINS","KC_EQL","KC_BSPC","KC_PGUP"],
+["KC_TAB","KC_Q","KC_W","KC_E","KC_R","KC_T","KC_Y","KC_U","KC_I","KC_O","KC_P","KC_LBRC","KC_RBRC","KC_BSLS","KC_PGDN"],
+["KC_CAPS","KC_A","KC_S","KC_D","KC_F","KC_G","KC_H","KC_J","KC_K","KC_L","KC_SCLN","KC_QUOT","KC_ENT","KC_HOME"],
+["KC_LSFT","KC_Z","KC_X","KC_C","KC_V","KC_B","KC_N","KC_M","KC_COMM","KC_DOT","KC_SLSH","KC_RSFT","KC_UP"],
+["KC_LCTL","KC_LOPTN","KC_LCMMD","KC_SPC","KC_RCMMD","MO(MAC_FN)","KC_RCTL","KC_LEFT","KC_DOWN","KC_RGHT"]
+];
+
+/* 4レイヤー複製 */
+let layers = LAYER_NAMES.map(()=>({keys:{}}));
+
+LAYOUT.forEach((k,i)=>{
+    layers[0].keys[k.id] = defaultLayers.flat()[i] || "KC_TRNS";
+});
+
+/* =============================
+   UIロジック
+============================= */
+
 let currentLayer=0;
 let selected=null;
 
-/* ===== 描画 ===== */
 function renderTabs(){
-    const t=document.getElementById("tabs");
-    t.innerHTML=layers.map((l,i)=>
-        `<button class="layer-tab ${i===currentLayer?"active":""}" onclick="switchLayer(${i})">${l.name}</button>`
-    ).join("");
+    document.getElementById("tabs").innerHTML =
+        LAYER_NAMES.map((n,i)=>
+            `<button onclick="switchLayer(${i})">${n}</button>`
+        ).join("");
 }
 
 function renderKeyboard(){
-    const kb=document.getElementById("keyboard");
-
-    kb.innerHTML=LAYOUT.map(k=>{
-        const kc=layers[currentLayer].keys[k.id]||"KC_TRNS";
-
+    keyboardDiv.innerHTML = LAYOUT.map(k=>{
+        const kc = layers[currentLayer].keys[k.id]||"KC_TRNS";
         return `
-        <div class="key ${kc==='KC_TRNS'?'transparent':''} ${selected===k.id?'selected':''}"
-        style="
-            left:${k.x*KEY_SIZE}px;
-            top:${k.y*KEY_SIZE}px;
-            width:${k.w*KEY_SIZE}px;
-        "
-        onclick="selectKey('${k.id}')">${kc.replace('KC_','')}</div>`;
+        <div class="key ${kc==="KC_TRNS"?"transparent":""} ${selected===k.id?"selected":""}"
+            style="left:${k.x*KEY_SIZE}px;top:${k.y*KEY_SIZE}px;width:${k.w*KEY_SIZE}px"
+            onclick="selectKey('${k.id}')">${kc.replace("KC_","")}</div>`;
     }).join("");
 }
 
 function selectKey(id){
     selected=id;
-    document.getElementById("editor").style.display="block";
     document.getElementById("keyInput").value=layers[currentLayer].keys[id]||"KC_TRNS";
     renderKeyboard();
 }
@@ -252,13 +161,37 @@ function applyKey(){
 
 function switchLayer(i){
     currentLayer=i;
-    renderTabs();
     renderKeyboard();
+}
+
+/* ===== 保存/読込 ===== */
+function saveJson(){
+    const blob=new Blob([JSON.stringify(layers)],{type:"application/json"});
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);
+    a.download="keymap.json";
+    a.click();
+}
+function loadJson(e){
+    const r=new FileReader();
+    r.onload=()=>{layers=JSON.parse(r.result);renderKeyboard();}
+    r.readAsText(e.target.files[0]);
+}
+
+/* ===== keymap.c 生成 ===== */
+function downloadKeymap(){
+    const text = JSON.stringify(layers,null,2);
+    const blob=new Blob([text],{type:"text/plain"});
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);
+    a.download="keymap.c.txt";
+    a.click();
 }
 
 /* 初期化 */
 renderTabs();
 renderKeyboard();
+
 </script>
 </body>
-</html>
+</html>    
