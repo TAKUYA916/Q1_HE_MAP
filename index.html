@@ -12,795 +12,821 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #1a1a2e;
-            color: #eee;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             min-height: 100vh;
+            color: #fff;
             padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
         h1 {
             text-align: center;
-            margin-bottom: 10px;
-            color: #00d4ff;
-            font-size: 24px;
+            margin-bottom: 20px;
+            font-size: 2em;
+            background: linear-gradient(90deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .subtitle {
-            text-align: center;
-            color: #888;
+        .panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
             margin-bottom: 20px;
-            font-size: 14px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .panel-title {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: #00d4ff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .file-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .file-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .file-group label {
+            font-size: 0.9em;
+            color: #aaa;
+        }
+
+        .file-group input[type="file"] {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-group input[type="file"]:hover {
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .status {
+            font-size: 0.85em;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+
+        .status.success {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+        }
+
+        .status.error {
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff4444;
         }
 
         .layer-tabs {
             display: flex;
-            gap: 8px;
-            justify-content: center;
-            margin-bottom: 20px;
+            gap: 10px;
             flex-wrap: wrap;
-            max-width: 100%;
-            overflow-x: auto;
-            padding: 5px 0;
+            margin-bottom: 15px;
         }
 
         .layer-tab {
-            padding: 8px 16px;
-            background: #2d2d44;
-            border: 2px solid #444;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
             border-radius: 8px;
             color: #fff;
             cursor: pointer;
-            transition: all 0.2s;
-            font-size: 13px;
-            white-space: nowrap;
-            flex-shrink: 0;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .layer-tab:hover {
-            background: #3d3d55;
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .layer-tab.active {
-            background: #00d4ff;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
             color: #000;
-            border-color: #00d4ff;
-        }
-
-        .layer-tab .delete-layer {
-            margin-left: 8px;
-            color: #ff6b6b;
             font-weight: bold;
         }
 
-        .layer-tab.active .delete-layer {
-            color: #cc0000;
+        .layer-tab .delete-layer {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: rgba(255, 0, 0, 0.5);
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            font-size: 12px;
+            line-height: 1;
+            opacity: 0.7;
+        }
+
+        .layer-tab .delete-layer:hover {
+            opacity: 1;
+            background: rgba(255, 0, 0, 0.8);
+        }
+
+        .add-layer-btn {
+            padding: 10px 20px;
+            background: rgba(0, 212, 255, 0.2);
+            border: 2px dashed #00d4ff;
+            border-radius: 8px;
+            color: #00d4ff;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .add-layer-btn:hover {
+            background: rgba(0, 212, 255, 0.3);
+        }
+
+        .keyboard-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            min-height: 300px;
         }
 
         .keyboard-container {
-            display: flex;
-            justify-content: center;
-            overflow-x: auto;
-            padding: 20px 0;
-        }
-
-        .keyboard {
             position: relative;
-            background: #2d2d44;
-            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
             border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            padding: 20px;
         }
 
         .key {
             position: absolute;
-            background: linear-gradient(145deg, #3a3a50, #2a2a3a);
-            border: 1px solid #555;
+            background: linear-gradient(145deg, #3a3a4a, #2a2a3a);
+            border: 2px solid #444;
             border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 11px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.15s;
             text-align: center;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
             padding: 4px;
             word-break: break-all;
-            line-height: 1.2;
             overflow: hidden;
+            text-overflow: ellipsis;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         .key:hover {
-            background: linear-gradient(145deg, #4a4a60, #3a3a4a);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,212,255,0.3);
-            z-index: 10;
+            box-shadow: 0 6px 12px rgba(0, 212, 255, 0.3);
+            border-color: #00d4ff;
         }
 
         .key.selected {
-            background: #00d4ff;
-            color: #000;
-            border-color: #00d4ff;
-            z-index: 11;
+            border-color: #00ff88;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
         }
 
-        .key.transparent {
-            background: linear-gradient(145deg, #2a2a3a, #1a1a2a);
-            color: #666;
+        .key.encoder-key {
+            border-radius: 50%;
+            font-size: 9px;
         }
 
-        .key.modifier {
-            background: linear-gradient(145deg, #4a3a50, #3a2a3a);
+        .encoder-group {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
         }
 
-        .key.layer-key {
-            background: linear-gradient(145deg, #3a4a50, #2a3a3a);
-            color: #00ffaa;
-        }
-
-        .no-layout {
-            text-align: center;
-            padding: 60px 20px;
+        .encoder-label {
+            font-size: 9px;
             color: #888;
-        }
-
-        .no-layout p {
-            margin-bottom: 10px;
+            text-align: center;
         }
 
         .editor-panel {
-            max-width: 600px;
-            margin: 30px auto;
-            background: #2d2d44;
-            padding: 20px;
-            border-radius: 12px;
+            display: none;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
 
-        .editor-panel h3 {
-            margin-bottom: 15px;
+        .editor-panel.visible {
+            display: grid;
+        }
+
+        .key-info {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .key-info h3 {
             color: #00d4ff;
+            margin-bottom: 10px;
         }
 
-        .editor-row {
-            display: flex;
-            gap: 10px;
+        .key-input-group {
             margin-bottom: 15px;
-            align-items: center;
         }
 
-        .editor-row label {
-            width: 100px;
-            font-size: 14px;
+        .key-input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #aaa;
+            font-size: 0.9em;
         }
 
-        .editor-row input, .editor-row select {
-            flex: 1;
+        .key-input-group input {
+            width: 100%;
             padding: 10px;
-            background: #1a1a2e;
-            border: 1px solid #444;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 6px;
             color: #fff;
-            font-size: 14px;
+            font-family: monospace;
         }
 
-        .editor-row input:focus, .editor-row select:focus {
+        .key-input-group input:focus {
             outline: none;
             border-color: #00d4ff;
         }
 
-        .btn {
-            padding: 12px 24px;
+        .keycode-categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .category-btn {
+            padding: 5px 10px;
+            background: rgba(255, 255, 255, 0.1);
             border: none;
-            border-radius: 8px;
+            border-radius: 4px;
+            color: #fff;
             cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
+            font-size: 0.8em;
             transition: all 0.2s;
         }
 
+        .category-btn:hover, .category-btn.active {
+            background: rgba(0, 212, 255, 0.3);
+            color: #00d4ff;
+        }
+
+        .keycode-quick {
+            display: none;
+            flex-wrap: wrap;
+            gap: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+        }
+
+        .keycode-quick.visible {
+            display: flex;
+        }
+
+        .keycode-btn {
+            padding: 5px 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 0.75em;
+            font-family: monospace;
+            transition: all 0.2s;
+        }
+
+        .keycode-btn:hover {
+            background: rgba(0, 212, 255, 0.3);
+            border-color: #00d4ff;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
         .btn-primary {
-            background: #00d4ff;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
             color: #000;
         }
 
         .btn-primary:hover {
-            background: #00b8e6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
         }
 
         .btn-secondary {
-            background: #444;
+            background: rgba(255, 255, 255, 0.1);
             color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .btn-secondary:hover {
-            background: #555;
-        }
-
-        .btn-success {
-            background: #00ff88;
-            color: #000;
-        }
-
-        .btn-success:hover {
-            background: #00dd77;
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .btn-danger {
-            background: #ff4757;
-            color: #fff;
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff4444;
+            border: 1px solid rgba(255, 68, 68, 0.3);
         }
 
         .btn-danger:hover {
-            background: #ff3344;
+            background: rgba(255, 68, 68, 0.3);
         }
 
-        .btn-small {
-            padding: 6px 12px;
-            font-size: 12px;
+        .layer-badge {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            z-index: 1000;
         }
 
-        .actions {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 20px;
-            flex-wrap: wrap;
+        .output-area {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
         }
 
-        .keycode-quick {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            margin-top: 10px;
-            max-height: 200px;
+        .output-area pre {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85em;
+            max-height: 300px;
             overflow-y: auto;
         }
 
-        .keycode-btn {
-            padding: 5px 10px;
-            background: #3a3a50;
-            border: 1px solid #555;
-            border-radius: 4px;
-            color: #fff;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        .keycode-btn:hover {
-            background: #4a4a60;
-        }
-
-        .info-box {
-            background: #1a1a2e;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-            font-size: 13px;
-        }
-
-        .info-box code {
-            background: #3a3a50;
-            padding: 2px 6px;
-            border-radius: 4px;
-            color: #00d4ff;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 15px;
-        }
-
-        .tab {
-            padding: 8px 16px;
-            background: #1a1a2e;
-            border: 1px solid #444;
-            border-radius: 6px 6px 0 0;
-            cursor: pointer;
-            font-size: 13px;
-        }
-
-        .tab.active {
-            background: #2d2d44;
-            border-bottom-color: #2d2d44;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Settings Panel */
-        .settings-panel {
-            max-width: 800px;
-            margin: 30px auto;
-            background: #2d2d44;
-            padding: 20px;
-            border-radius: 12px;
-        }
-
-        .settings-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            padding: 10px;
-            margin: -10px -10px 0 -10px;
-            border-radius: 12px 12px 0 0;
-        }
-
-        .settings-header:hover {
-            background: #3a3a50;
-        }
-
-        .settings-header h3 {
-            color: #00d4ff;
-            font-size: 16px;
-            margin: 0;
-        }
-
-        .settings-toggle {
-            color: #888;
-            font-size: 20px;
-            transition: transform 0.3s;
-        }
-
-        .settings-toggle.open {
-            transform: rotate(180deg);
-        }
-
-        .settings-content {
-            display: none;
-            padding-top: 20px;
-        }
-
-        .settings-content.open {
-            display: block;
-        }
-
-        .import-row {
-            display: flex;
+        .color-settings {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
             gap: 10px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+
+        .color-group {
+            display: flex;
             align-items: center;
+            gap: 10px;
         }
 
-        .import-row label {
-            min-width: 120px;
-            font-size: 14px;
+        .color-group label {
+            font-size: 0.85em;
+            color: #aaa;
+            min-width: 80px;
         }
 
-        .file-input-wrapper {
-            position: relative;
-            flex: 1;
-            min-width: 200px;
-        }
-
-        .file-input-wrapper input[type="file"] {
-            width: 100%;
-            padding: 10px;
-            background: #1a1a2e;
-            border: 1px solid #444;
-            border-radius: 6px;
-            color: #fff;
-            cursor: pointer;
-        }
-
-        .file-input-wrapper input[type="file"]::-webkit-file-upload-button {
-            background: #00d4ff;
-            color: #000;
+        .color-group input[type="color"] {
+            width: 40px;
+            height: 30px;
             border: none;
-            padding: 8px 16px;
             border-radius: 4px;
             cursor: pointer;
-            margin-right: 10px;
+            background: transparent;
         }
 
-        .import-status {
-            font-size: 12px;
-            padding: 5px 10px;
+        .color-preview {
+            padding: 8px 15px;
             border-radius: 4px;
-            display: inline-block;
+            font-size: 0.85em;
         }
 
-        .import-status.success {
-            background: #00ff8833;
-            color: #00ff88;
+        .notes-panel {
+            margin-top: 20px;
         }
 
-        .import-status.error {
-            background: #ff008833;
-            color: #ff0088;
+        .notes-section {
+            margin-bottom: 20px;
         }
 
-        .import-help {
-            font-size: 12px;
-            color: #888;
-            margin-top: 10px;
+        .notes-section h4 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .notes-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .note-item {
+            display: grid;
+            grid-template-columns: 120px 1fr auto;
+            gap: 10px;
+            align-items: center;
             padding: 10px;
-            background: #1a1a2e;
+            background: rgba(0, 0, 0, 0.2);
             border-radius: 6px;
         }
 
-        .import-help code {
-            background: #3a3a50;
-            padding: 2px 6px;
+        .note-item input {
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 4px;
-            color: #00d4ff;
+            color: #fff;
+            font-size: 0.85em;
         }
 
-        .layer-count-badge {
-            background: #00d4ff;
-            color: #000;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 11px;
-            margin-left: 10px;
+        .note-item input:focus {
+            outline: none;
+            border-color: #00d4ff;
+        }
+
+        .note-item .delete-note {
+            padding: 5px 10px;
+            background: rgba(255, 68, 68, 0.2);
+            border: none;
+            border-radius: 4px;
+            color: #ff4444;
+            cursor: pointer;
+        }
+
+        .add-note-btn {
+            padding: 8px 15px;
+            background: rgba(0, 212, 255, 0.2);
+            border: 1px dashed #00d4ff;
+            border-radius: 6px;
+            color: #00d4ff;
+            cursor: pointer;
+            font-size: 0.85em;
+            margin-top: 10px;
+        }
+
+        .add-note-btn:hover {
+            background: rgba(0, 212, 255, 0.3);
         }
 
         @media (max-width: 768px) {
-            .keyboard {
-                transform: scale(0.6);
-                transform-origin: top left;
+            .editor-panel {
+                grid-template-columns: 1fr;
             }
             
-            .key {
-                font-size: 8px;
+            .file-inputs {
+                grid-template-columns: 1fr;
             }
-
-            .import-row {
-                flex-direction: column;
-                align-items: stretch;
+            
+            .keyboard-wrapper {
+                padding: 20px;
+                overflow-x: auto;
             }
-
-            .import-row label {
-                min-width: auto;
+            
+            .note-item {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <h1>⌨️ QMK Keymap Editor</h1>
-    <p class="subtitle">keyboard.json と keymap.c を読み込んで編集（最大10レイヤー対応）</p>
-
-    <div class="layer-tabs" id="layerTabs"></div>
-
-    <div class="keyboard-container">
-        <div class="keyboard" id="keyboard">
-            <div class="no-layout">
-                <p>⬇️ 下の「設定」からファイルを読み込んでください</p>
-                <p>または下のサンプルを使用:</p>
-                <button class="btn btn-primary" onclick="loadSampleLayout()" style="margin-top: 10px;">
-                    Q1 HE サンプルを読み込む
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div class="editor-panel" id="editorPanel" style="display: none;">
-        <h3>🔧 キー編集: <span id="editingKeyName"></span></h3>
+    <div class="container">
+        <h1>⌨️ QMK Keymap Editor</h1>
         
-        <div class="editor-row">
-            <label>キーコード:</label>
-            <input type="text" id="keycodeInput" placeholder="例: KC_A, MO(1), LT(2,KC_SPC)">
-        </div>
+        <div class="layer-badge" id="layerBadge">Layer 0</div>
 
-        <div class="tabs">
-            <div class="tab active" onclick="switchQuickTab(0)">基本</div>
-            <div class="tab" onclick="switchQuickTab(1)">文字</div>
-            <div class="tab" onclick="switchQuickTab(2)">修飾</div>
-            <div class="tab" onclick="switchQuickTab(3)">レイヤー</div>
-            <div class="tab" onclick="switchQuickTab(4)">メディア</div>
-            <div class="tab" onclick="switchQuickTab(5)">機能</div>
-        </div>
-
-        <div class="tab-content active" id="quickTab0">
-            <div class="keycode-quick">
-                <button class="keycode-btn" data-kc="KC_TRNS">▽ 透過</button>
-                <button class="keycode-btn" data-kc="KC_NO">✕ 無効</button>
-                <button class="keycode-btn" data-kc="KC_ESC">Esc</button>
-                <button class="keycode-btn" data-kc="KC_ENT">Enter</button>
-                <button class="keycode-btn" data-kc="KC_SPC">Space</button>
-                <button class="keycode-btn" data-kc="KC_BSPC">BackSpace</button>
-                <button class="keycode-btn" data-kc="KC_TAB">Tab</button>
-                <button class="keycode-btn" data-kc="KC_DEL">Delete</button>
-                <button class="keycode-btn" data-kc="KC_INS">Insert</button>
-                <button class="keycode-btn" data-kc="KC_HOME">Home</button>
-                <button class="keycode-btn" data-kc="KC_END">End</button>
-                <button class="keycode-btn" data-kc="KC_PGUP">PageUp</button>
-                <button class="keycode-btn" data-kc="KC_PGDN">PageDown</button>
-                <button class="keycode-btn" data-kc="KC_UP">↑</button>
-                <button class="keycode-btn" data-kc="KC_DOWN">↓</button>
-                <button class="keycode-btn" data-kc="KC_LEFT">←</button>
-                <button class="keycode-btn" data-kc="KC_RGHT">→</button>
-            </div>
-        </div>
-
-        <div class="tab-content" id="quickTab1">
-            <div class="keycode-quick">
-                <button class="keycode-btn" data-kc="KC_A">A</button>
-                <button class="keycode-btn" data-kc="KC_B">B</button>
-                <button class="keycode-btn" data-kc="KC_C">C</button>
-                <button class="keycode-btn" data-kc="KC_D">D</button>
-                <button class="keycode-btn" data-kc="KC_E">E</button>
-                <button class="keycode-btn" data-kc="KC_F">F</button>
-                <button class="keycode-btn" data-kc="KC_G">G</button>
-                <button class="keycode-btn" data-kc="KC_H">H</button>
-                <button class="keycode-btn" data-kc="KC_I">I</button>
-                <button class="keycode-btn" data-kc="KC_J">J</button>
-                <button class="keycode-btn" data-kc="KC_K">K</button>
-                <button class="keycode-btn" data-kc="KC_L">L</button>
-                <button class="keycode-btn" data-kc="KC_M">M</button>
-                <button class="keycode-btn" data-kc="KC_N">N</button>
-                <button class="keycode-btn" data-kc="KC_O">O</button>
-                <button class="keycode-btn" data-kc="KC_P">P</button>
-                <button class="keycode-btn" data-kc="KC_Q">Q</button>
-                <button class="keycode-btn" data-kc="KC_R">R</button>
-                <button class="keycode-btn" data-kc="KC_S">S</button>
-                <button class="keycode-btn" data-kc="KC_T">T</button>
-                <button class="keycode-btn" data-kc="KC_U">U</button>
-                <button class="keycode-btn" data-kc="KC_V">V</button>
-                <button class="keycode-btn" data-kc="KC_W">W</button>
-                <button class="keycode-btn" data-kc="KC_X">X</button>
-                <button class="keycode-btn" data-kc="KC_Y">Y</button>
-                <button class="keycode-btn" data-kc="KC_Z">Z</button>
-                <button class="keycode-btn" data-kc="KC_1">1</button>
-                <button class="keycode-btn" data-kc="KC_2">2</button>
-                <button class="keycode-btn" data-kc="KC_3">3</button>
-                <button class="keycode-btn" data-kc="KC_4">4</button>
-                <button class="keycode-btn" data-kc="KC_5">5</button>
-                <button class="keycode-btn" data-kc="KC_6">6</button>
-                <button class="keycode-btn" data-kc="KC_7">7</button>
-                <button class="keycode-btn" data-kc="KC_8">8</button>
-                <button class="keycode-btn" data-kc="KC_9">9</button>
-                <button class="keycode-btn" data-kc="KC_0">0</button>
-                <button class="keycode-btn" data-kc="KC_F1">F1</button>
-                <button class="keycode-btn" data-kc="KC_F2">F2</button>
-                <button class="keycode-btn" data-kc="KC_F3">F3</button>
-                <button class="keycode-btn" data-kc="KC_F4">F4</button>
-                <button class="keycode-btn" data-kc="KC_F5">F5</button>
-                <button class="keycode-btn" data-kc="KC_F6">F6</button>
-                <button class="keycode-btn" data-kc="KC_F7">F7</button>
-                <button class="keycode-btn" data-kc="KC_F8">F8</button>
-                <button class="keycode-btn" data-kc="KC_F9">F9</button>
-                <button class="keycode-btn" data-kc="KC_F10">F10</button>
-                <button class="keycode-btn" data-kc="KC_F11">F11</button>
-                <button class="keycode-btn" data-kc="KC_F12">F12</button>
-            </div>
-        </div>
-
-        <div class="tab-content" id="quickTab2">
-            <div class="keycode-quick">
-                <button class="keycode-btn" data-kc="KC_LCTL">L Ctrl</button>
-                <button class="keycode-btn" data-kc="KC_LSFT">L Shift</button>
-                <button class="keycode-btn" data-kc="KC_LALT">L Alt</button>
-                <button class="keycode-btn" data-kc="KC_LGUI">L GUI</button>
-                <button class="keycode-btn" data-kc="KC_RCTL">R Ctrl</button>
-                <button class="keycode-btn" data-kc="KC_RSFT">R Shift</button>
-                <button class="keycode-btn" data-kc="KC_RALT">R Alt</button>
-                <button class="keycode-btn" data-kc="KC_RGUI">R GUI</button>
-                <button class="keycode-btn" data-kc="KC_CAPS">CapsLock</button>
-                <button class="keycode-btn" data-kc="LCTL(KC_C)">Ctrl+C</button>
-                <button class="keycode-btn" data-kc="LCTL(KC_V)">Ctrl+V</button>
-                <button class="keycode-btn" data-kc="LCTL(KC_X)">Ctrl+X</button>
-                <button class="keycode-btn" data-kc="LCTL(KC_Z)">Ctrl+Z</button>
-                <button class="keycode-btn" data-kc="LCTL(KC_A)">Ctrl+A</button>
-                <button class="keycode-btn" data-kc="LCTL(KC_S)">Ctrl+S</button>
-                <button class="keycode-btn" data-kc="LGUI(KC_SPC)">GUI+SPC</button>
-            </div>
-        </div>
-
-        <div class="tab-content" id="quickTab3">
-            <div class="keycode-quick">
-                <button class="keycode-btn" data-kc="MO(1)">MO(1)</button>
-                <button class="keycode-btn" data-kc="MO(2)">MO(2)</button>
-                <button class="keycode-btn" data-kc="MO(3)">MO(3)</button>
-                <button class="keycode-btn" data-kc="MO(4)">MO(4)</button>
-                <button class="keycode-btn" data-kc="MO(5)">MO(5)</button>
-                <button class="keycode-btn" data-kc="TG(1)">TG(1)</button>
-                <button class="keycode-btn" data-kc="TG(2)">TG(2)</button>
-                <button class="keycode-btn" data-kc="TG(3)">TG(3)</button>
-                <button class="keycode-btn" data-kc="TO(0)">TO(0)</button>
-                <button class="keycode-btn" data-kc="TO(1)">TO(1)</button>
-                <button class="keycode-btn" data-kc="TO(2)">TO(2)</button>
-                <button class="keycode-btn" data-kc="LT(1,KC_SPC)">LT(1,SPC)</button>
-                <button class="keycode-btn" data-kc="LT(2,KC_SPC)">LT(2,SPC)</button>
-                <button class="keycode-btn" data-kc="LT(1,KC_ENT)">LT(1,ENT)</button>
-                <button class="keycode-btn" data-kc="LT(3,KC_TAB)">LT(3,TAB)</button>
-                <button class="keycode-btn" data-kc="OSL(1)">OSL(1)</button>
-                <button class="keycode-btn" data-kc="OSL(2)">OSL(2)</button>
-            </div>
-        </div>
-
-        <div class="tab-content" id="quickTab4">
-            <div class="keycode-quick">
-                <button class="keycode-btn" data-kc="KC_MUTE">🔇 Mute</button>
-                <button class="keycode-btn" data-kc="KC_VOLU">🔊 Vol+</button>
-                <button class="keycode-btn" data-kc="KC_VOLD">🔉 Vol-</button>
-                <button class="keycode-btn" data-kc="KC_MPLY">⏯ Play</button>
-                <button class="keycode-btn" data-kc="KC_MNXT">⏭ Next</button>
-                <button class="keycode-btn" data-kc="KC_MPRV">⏮ Prev</button>
-                <button class="keycode-btn" data-kc="KC_MSTP">⏹ Stop</button>
-                <button class="keycode-btn" data-kc="KC_BRIU">🔆 輝度+</button>
-                <button class="keycode-btn" data-kc="KC_BRID">🔅 輝度-</button>
-            </div>
-        </div>
-
-        <div class="tab-content" id="quickTab5">
-            <div class="keycode-quick">
-                <button class="keycode-btn" data-kc="RGB_TOG">RGB ON/OFF</button>
-                <button class="keycode-btn" data-kc="RGB_MOD">RGB Mode+</button>
-                <button class="keycode-btn" data-kc="RGB_RMOD">RGB Mode-</button>
-                <button class="keycode-btn" data-kc="RGB_HUI">RGB Hue+</button>
-                <button class="keycode-btn" data-kc="RGB_HUD">RGB Hue-</button>
-                <button class="keycode-btn" data-kc="RGB_SAI">RGB Sat+</button>
-                <button class="keycode-btn" data-kc="RGB_SAD">RGB Sat-</button>
-                <button class="keycode-btn" data-kc="RGB_VAI">RGB Val+</button>
-                <button class="keycode-btn" data-kc="RGB_VAD">RGB Val-</button>
-                <button class="keycode-btn" data-kc="QK_BOOT">Bootloader</button>
-                <button class="keycode-btn" data-kc="QK_RBT">Reboot</button>
-                <button class="keycode-btn" data-kc="NK_TOGG">N-Key Toggle</button>
-                <button class="keycode-btn" data-kc="KC_PSCR">PrintScreen</button>
-                <button class="keycode-btn" data-kc="KC_SCRL">ScrollLock</button>
-                <button class="keycode-btn" data-kc="KC_PAUS">Pause</button>
-            </div>
-        </div>
-
-        <div class="actions">
-            <button class="btn btn-primary" onclick="applyKeycode()">適用</button>
-            <button class="btn btn-secondary" onclick="closeEditor()">キャンセル</button>
-        </div>
-
-        <div class="info-box">
-            💡 <strong>ヒント:</strong> 
-            <code>KC_TRNS</code> = 下レイヤー透過 / 
-            <code>MO(n)</code> = 押下中レイヤーn / 
-            <code>LT(n,key)</code> = 長押しでレイヤー、タップでキー
-        </div>
-    </div>
-
-    <div class="actions">
-        <button class="btn btn-success" onclick="downloadKeymap()">📥 keymap.c ダウンロード</button>
-        <button class="btn btn-secondary" onclick="saveToLocal()">💾 ブラウザに保存</button>
-        <button class="btn btn-secondary" onclick="loadFromLocal()">📂 保存データ読込</button>
-        <button class="btn btn-secondary" onclick="addLayer()">➕ レイヤー追加</button>
-        <button class="btn btn-secondary" onclick="exportJson()">📤 JSON出力</button>
-    </div>
-
-    <!-- Settings Panel (moved to bottom) -->
-    <div class="settings-panel">
-        <div class="settings-header" onclick="toggleSettings()">
-            <h3>⚙️ 設定・ファイル読み込み <span class="layer-count-badge" id="layerCountBadge">0 layers</span></h3>
-            <span class="settings-toggle" id="settingsToggle">▼</span>
-        </div>
-        <div class="settings-content" id="settingsContent">
-            <div class="import-row">
-                <label>keyboard.json:</label>
-                <div class="file-input-wrapper">
-                    <input type="file" id="keyboardJsonFile" accept=".json" onchange="loadKeyboardJson(this)">
+        <!-- File Input Panel -->
+        <div class="panel">
+            <div class="panel-title">📁 ファイル読み込み</div>
+            <div class="file-inputs">
+                <div class="file-group">
+                    <label>keyboard.json (QMK Firmware)</label>
+                    <input type="file" id="keyboardJsonFile" accept=".json" onchange="loadKeyboardJson(this.files[0])">
+                    <div id="keyboardJsonStatus" class="status"></div>
                 </div>
-                <span id="keyboardJsonStatus"></span>
-            </div>
-
-            <div class="import-row">
-                <label>keymap.c:</label>
-                <div class="file-input-wrapper">
-                    <input type="file" id="keymapCFile" accept=".c" onchange="loadKeymapC(this)">
+                <div class="file-group">
+                    <label>keymap.c (既存キーマップ・オプション)</label>
+                    <input type="file" id="keymapCFile" accept=".c" onchange="loadKeymapC(this.files[0])">
+                    <div id="keymapCStatus" class="status"></div>
                 </div>
-                <span id="keymapCStatus"></span>
             </div>
+        </div>
 
-            <div class="import-help">
-                💡 <strong>ファイルの場所:</strong><br>
-                GitHub → <code>qmk_firmware/keyboards/[メーカー]/[モデル]/</code><br>
-                例: <code>keyboards/keychron/q1_he_ansi/keyboard.json</code><br>
-                キーマップ: <code>keyboards/keychron/q1_he_ansi/keymaps/default/keymap.c</code><br><br>
-                ⚡ <strong>対応:</strong> 最大10レイヤー、<code>_______</code> は <code>KC_TRNS</code> として扱います
+        <!-- Layer Tabs -->
+        <div class="panel">
+            <div class="panel-title">🗂️ レイヤー</div>
+            <div class="layer-tabs" id="layerTabs"></div>
+            <button class="add-layer-btn" onclick="addLayer()">+ レイヤー追加</button>
+        </div>
+
+        <!-- Color Settings -->
+        <div class="panel">
+            <div class="panel-title">🎨 カラー設定</div>
+            <div class="color-settings">
+                <div class="color-group">
+                    <label>キー背景色:</label>
+                    <input type="color" id="keyBgColor" value="#3a3a4a" onchange="updateKeyColors()">
+                </div>
+                <div class="color-group">
+                    <label>キー文字色:</label>
+                    <input type="color" id="keyTextColor" value="#ffffff" onchange="updateKeyColors()">
+                </div>
+                <div class="color-group">
+                    <label>キー枠色:</label>
+                    <input type="color" id="keyBorderColor" value="#444444" onchange="updateKeyColors()">
+                </div>
+                <div class="color-group">
+                    <label>プレビュー:</label>
+                    <span class="color-preview" id="colorPreview">KC_A</span>
+                </div>
             </div>
+        </div>
 
-            <div class="actions" style="margin-top: 15px;">
-                <button class="btn btn-primary btn-small" onclick="loadSampleLayout()">
-                    🎹 Q1 HE サンプル読込
-                </button>
-                <button class="btn btn-danger btn-small" onclick="clearAll()">
-                    🗑️ 全てクリア
-                </button>
+        <!-- Keyboard Display -->
+        <div class="panel">
+            <div class="panel-title">⌨️ キーボードレイアウト</div>
+            <div class="keyboard-wrapper">
+                <div class="keyboard-container" id="keyboardContainer"></div>
+            </div>
+        </div>
+
+        <!-- Key Editor -->
+        <div class="panel editor-panel" id="editorPanel">
+            <div class="key-info">
+                <h3>🔧 キー編集: <span id="selectedKeyId">-</span></h3>
+                <div class="key-input-group">
+                    <label>キーコード</label>
+                    <input type="text" id="keycodeInput" placeholder="KC_A, MO(1), LT(2,KC_SPC)..." onchange="updateKeycode(this.value)">
+                </div>
+                <div class="keycode-categories">
+                    <button class="category-btn" onclick="showCategory('basic')">基本</button>
+                    <button class="category-btn" onclick="showCategory('mod')">修飾</button>
+                    <button class="category-btn" onclick="showCategory('layer')">レイヤー</button>
+                    <button class="category-btn" onclick="showCategory('media')">メディア</button>
+                    <button class="category-btn" onclick="showCategory('mouse')">マウス</button>
+                    <button class="category-btn" onclick="showCategory('special')">特殊</button>
+                </div>
+                <div class="keycode-quick" id="basicKeycodes">
+                    <button class="keycode-btn" data-kc="KC_A">A</button>
+                    <button class="keycode-btn" data-kc="KC_B">B</button>
+                    <button class="keycode-btn" data-kc="KC_C">C</button>
+                    <button class="keycode-btn" data-kc="KC_D">D</button>
+                    <button class="keycode-btn" data-kc="KC_E">E</button>
+                    <button class="keycode-btn" data-kc="KC_F">F</button>
+                    <button class="keycode-btn" data-kc="KC_G">G</button>
+                    <button class="keycode-btn" data-kc="KC_H">H</button>
+                    <button class="keycode-btn" data-kc="KC_I">I</button>
+                    <button class="keycode-btn" data-kc="KC_J">J</button>
+                    <button class="keycode-btn" data-kc="KC_K">K</button>
+                    <button class="keycode-btn" data-kc="KC_L">L</button>
+                    <button class="keycode-btn" data-kc="KC_M">M</button>
+                    <button class="keycode-btn" data-kc="KC_N">N</button>
+                    <button class="keycode-btn" data-kc="KC_O">O</button>
+                    <button class="keycode-btn" data-kc="KC_P">P</button>
+                    <button class="keycode-btn" data-kc="KC_Q">Q</button>
+                    <button class="keycode-btn" data-kc="KC_R">R</button>
+                    <button class="keycode-btn" data-kc="KC_S">S</button>
+                    <button class="keycode-btn" data-kc="KC_T">T</button>
+                    <button class="keycode-btn" data-kc="KC_U">U</button>
+                    <button class="keycode-btn" data-kc="KC_V">V</button>
+                    <button class="keycode-btn" data-kc="KC_W">W</button>
+                    <button class="keycode-btn" data-kc="KC_X">X</button>
+                    <button class="keycode-btn" data-kc="KC_Y">Y</button>
+                    <button class="keycode-btn" data-kc="KC_Z">Z</button>
+                    <button class="keycode-btn" data-kc="KC_1">1</button>
+                    <button class="keycode-btn" data-kc="KC_2">2</button>
+                    <button class="keycode-btn" data-kc="KC_3">3</button>
+                    <button class="keycode-btn" data-kc="KC_4">4</button>
+                    <button class="keycode-btn" data-kc="KC_5">5</button>
+                    <button class="keycode-btn" data-kc="KC_6">6</button>
+                    <button class="keycode-btn" data-kc="KC_7">7</button>
+                    <button class="keycode-btn" data-kc="KC_8">8</button>
+                    <button class="keycode-btn" data-kc="KC_9">9</button>
+                    <button class="keycode-btn" data-kc="KC_0">0</button>
+                    <button class="keycode-btn" data-kc="KC_ENT">Enter</button>
+                    <button class="keycode-btn" data-kc="KC_ESC">Esc</button>
+                    <button class="keycode-btn" data-kc="KC_BSPC">BkSp</button>
+                    <button class="keycode-btn" data-kc="KC_TAB">Tab</button>
+                    <button class="keycode-btn" data-kc="KC_SPC">Space</button>
+                    <button class="keycode-btn" data-kc="KC_MINS">-</button>
+                    <button class="keycode-btn" data-kc="KC_EQL">=</button>
+                    <button class="keycode-btn" data-kc="KC_LBRC">[</button>
+                    <button class="keycode-btn" data-kc="KC_RBRC">]</button>
+                    <button class="keycode-btn" data-kc="KC_BSLS">\</button>
+                    <button class="keycode-btn" data-kc="KC_SCLN">;</button>
+                    <button class="keycode-btn" data-kc="KC_QUOT">'</button>
+                    <button class="keycode-btn" data-kc="KC_GRV">`</button>
+                    <button class="keycode-btn" data-kc="KC_COMM">,</button>
+                    <button class="keycode-btn" data-kc="KC_DOT">.</button>
+                    <button class="keycode-btn" data-kc="KC_SLSH">/</button>
+                </div>
+                <div class="keycode-quick" id="modKeycodes">
+                    <button class="keycode-btn" data-kc="KC_LSFT">L Shift</button>
+                    <button class="keycode-btn" data-kc="KC_RSFT">R Shift</button>
+                    <button class="keycode-btn" data-kc="KC_LCTL">L Ctrl</button>
+                    <button class="keycode-btn" data-kc="KC_RCTL">R Ctrl</button>
+                    <button class="keycode-btn" data-kc="KC_LALT">L Alt</button>
+                    <button class="keycode-btn" data-kc="KC_RALT">R Alt</button>
+                    <button class="keycode-btn" data-kc="KC_LGUI">L GUI</button>
+                    <button class="keycode-btn" data-kc="KC_RGUI">R GUI</button>
+                    <button class="keycode-btn" data-kc="KC_CAPS">Caps</button>
+                    <button class="keycode-btn" data-kc="LSFT_T(KC_)">LSFT_T()</button>
+                    <button class="keycode-btn" data-kc="LCTL_T(KC_)">LCTL_T()</button>
+                    <button class="keycode-btn" data-kc="LALT_T(KC_)">LALT_T()</button>
+                    <button class="keycode-btn" data-kc="LGUI_T(KC_)">LGUI_T()</button>
+                </div>
+                <div class="keycode-quick" id="layerKeycodes">
+                    <button class="keycode-btn" data-kc="MO(1)">MO(1)</button>
+                    <button class="keycode-btn" data-kc="MO(2)">MO(2)</button>
+                    <button class="keycode-btn" data-kc="MO(3)">MO(3)</button>
+                    <button class="keycode-btn" data-kc="TG(1)">TG(1)</button>
+                    <button class="keycode-btn" data-kc="TG(2)">TG(2)</button>
+                    <button class="keycode-btn" data-kc="TO(0)">TO(0)</button>
+                    <button class="keycode-btn" data-kc="TO(1)">TO(1)</button>
+                    <button class="keycode-btn" data-kc="LT(1,KC_)">LT(1,)</button>
+                    <button class="keycode-btn" data-kc="LT(2,KC_)">LT(2,)</button>
+                    <button class="keycode-btn" data-kc="OSL(1)">OSL(1)</button>
+                    <button class="keycode-btn" data-kc="KC_TRNS">_____</button>
+                    <button class="keycode-btn" data-kc="KC_NO">XXXXX</button>
+                </div>
+                <div class="keycode-quick" id="mediaKeycodes">
+                    <button class="keycode-btn" data-kc="KC_MUTE">Mute</button>
+                    <button class="keycode-btn" data-kc="KC_VOLU">Vol+</button>
+                    <button class="keycode-btn" data-kc="KC_VOLD">Vol-</button>
+                    <button class="keycode-btn" data-kc="KC_MPLY">Play</button>
+                    <button class="keycode-btn" data-kc="KC_MSTP">Stop</button>
+                    <button class="keycode-btn" data-kc="KC_MPRV">Prev</button>
+                    <button class="keycode-btn" data-kc="KC_MNXT">Next</button>
+                    <button class="keycode-btn" data-kc="KC_BRIU">Bright+</button>
+                    <button class="keycode-btn" data-kc="KC_BRID">Bright-</button>
+                </div>
+                <div class="keycode-quick" id="mouseKeycodes">
+                    <button class="keycode-btn" data-kc="KC_MS_U">M Up</button>
+                    <button class="keycode-btn" data-kc="KC_MS_D">M Down</button>
+                    <button class="keycode-btn" data-kc="KC_MS_L">M Left</button>
+                    <button class="keycode-btn" data-kc="KC_MS_R">M Right</button>
+                    <button class="keycode-btn" data-kc="KC_BTN1">M Btn1</button>
+                    <button class="keycode-btn" data-kc="KC_BTN2">M Btn2</button>
+                    <button class="keycode-btn" data-kc="KC_BTN3">M Btn3</button>
+                    <button class="keycode-btn" data-kc="KC_WH_U">Wheel Up</button>
+                    <button class="keycode-btn" data-kc="KC_WH_D">Wheel Dn</button>
+                </div>
+                <div class="keycode-quick" id="specialKeycodes">
+                    <button class="keycode-btn" data-kc="KC_F1">F1</button>
+                    <button class="keycode-btn" data-kc="KC_F2">F2</button>
+                    <button class="keycode-btn" data-kc="KC_F3">F3</button>
+                    <button class="keycode-btn" data-kc="KC_F4">F4</button>
+                    <button class="keycode-btn" data-kc="KC_F5">F5</button>
+                    <button class="keycode-btn" data-kc="KC_F6">F6</button>
+                    <button class="keycode-btn" data-kc="KC_F7">F7</button>
+                    <button class="keycode-btn" data-kc="KC_F8">F8</button>
+                    <button class="keycode-btn" data-kc="KC_F9">F9</button>
+                    <button class="keycode-btn" data-kc="KC_F10">F10</button>
+                    <button class="keycode-btn" data-kc="KC_F11">F11</button>
+                    <button class="keycode-btn" data-kc="KC_F12">F12</button>
+                    <button class="keycode-btn" data-kc="KC_PSCR">PrtSc</button>
+                    <button class="keycode-btn" data-kc="KC_SCRL">ScrLk</button>
+                    <button class="keycode-btn" data-kc="KC_PAUS">Pause</button>
+                    <button class="keycode-btn" data-kc="KC_INS">Ins</button>
+                    <button class="keycode-btn" data-kc="KC_DEL">Del</button>
+                    <button class="keycode-btn" data-kc="KC_HOME">Home</button>
+                    <button class="keycode-btn" data-kc="KC_END">End</button>
+                    <button class="keycode-btn" data-kc="KC_PGUP">PgUp</button>
+                    <button class="keycode-btn" data-kc="KC_PGDN">PgDn</button>
+                    <button class="keycode-btn" data-kc="KC_UP">↑</button>
+                    <button class="keycode-btn" data-kc="KC_DOWN">↓</button>
+                    <button class="keycode-btn" data-kc="KC_LEFT">←</button>
+                    <button class="keycode-btn" data-kc="KC_RGHT">→</button>
+                    <button class="keycode-btn" data-kc="QK_BOOT">BOOT</button>
+                    <button class="keycode-btn" data-kc="QK_RBT">REBOOT</button>
+                    <button class="keycode-btn" data-kc="RGB_TOG">RGB Tog</button>
+                    <button class="keycode-btn" data-kc="RGB_MOD">RGB Mode</button>
+                </div>
+            </div>
+            <div class="key-info">
+                <h3>📋 レイヤー情報</h3>
+                <div id="layerInfo">
+                    <p>現在のレイヤー: <strong id="currentLayerName">-</strong></p>
+                    <p>総キー数: <span id="totalKeys">0</span></p>
+                    <p>設定済み: <span id="configuredKeys">0</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notes Panel -->
+        <div class="panel notes-panel">
+            <div class="panel-title">📝 カスタム機能メモ</div>
+            
+            <div class="notes-section">
+                <h4>⚡ タップダンス</h4>
+                <div class="notes-grid" id="tapDanceNotes"></div>
+                <button class="add-note-btn" onclick="addNote('tapDance')">+ タップダンス追加</button>
+            </div>
+            
+            <div class="notes-section">
+                <h4>🔗 キーコンボ</h4>
+                <div class="notes-grid" id="comboNotes"></div>
+                <button class="add-note-btn" onclick="addNote('combo')">+ コンボ追加</button>
+            </div>
+            
+            <div class="notes-section">
+                <h4>📌 マクロ / その他</h4>
+                <div class="notes-grid" id="macroNotes"></div>
+                <button class="add-note-btn" onclick="addNote('macro')">+ メモ追加</button>
+            </div>
+        </div>
+
+        <!-- Actions & Output -->
+        <div class="panel">
+            <div class="panel-title">💾 保存・出力</div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="downloadKeymap()">📥 keymap.c ダウンロード</button>
+                <button class="btn btn-secondary" onclick="previewKeymap()">👁️ プレビュー</button>
+                <button class="btn btn-secondary" onclick="saveToLocal()">💾 ブラウザに保存</button>
+                <button class="btn btn-secondary" onclick="loadFromLocal()">📂 保存データ読込</button>
+                <button class="btn btn-secondary" onclick="exportJson()">📤 JSON出力</button>
+                <button class="btn btn-danger" onclick="clearAll()">🗑️ 全クリア</button>
+            </div>
+            <div class="output-area" id="outputArea" style="display: none;">
+                <pre id="outputCode"></pre>
             </div>
         </div>
     </div>
 
     <script>
-        // ==================== STATE ====================
+        // ==================== GLOBAL STATE ====================
         let layoutData = null;
         let layoutName = '';
         let layers = [];
         let currentLayer = 0;
         let selectedKey = null;
-        const SCALE = 50;
-        const MAX_LAYERS = 10;
-
-        // ==================== DISPLAY NAMES ====================
-        const KEYCODE_DISPLAY = {
-            'KC_ESC': 'Esc', 'KC_F1': 'F1', 'KC_F2': 'F2', 'KC_F3': 'F3', 'KC_F4': 'F4',
-            'KC_F5': 'F5', 'KC_F6': 'F6', 'KC_F7': 'F7', 'KC_F8': 'F8', 'KC_F9': 'F9',
-            'KC_F10': 'F10', 'KC_F11': 'F11', 'KC_F12': 'F12', 'KC_F13': 'F13',
-            'KC_GRV': '`', 'KC_1': '1', 'KC_2': '2', 'KC_3': '3', 'KC_4': '4', 'KC_5': '5',
-            'KC_6': '6', 'KC_7': '7', 'KC_8': '8', 'KC_9': '9', 'KC_0': '0',
-            'KC_MINS': '-', 'KC_EQL': '=', 'KC_BSPC': '⌫', 'KC_DEL': 'Del',
-            'KC_TAB': 'Tab', 'KC_Q': 'Q', 'KC_W': 'W', 'KC_E': 'E', 'KC_R': 'R',
-            'KC_T': 'T', 'KC_Y': 'Y', 'KC_U': 'U', 'KC_I': 'I', 'KC_O': 'O',
-            'KC_P': 'P', 'KC_LBRC': '[', 'KC_RBRC': ']', 'KC_BSLS': '\\',
-            'KC_CAPS': 'Caps', 'KC_A': 'A', 'KC_S': 'S', 'KC_D': 'D', 'KC_F': 'F',
-            'KC_G': 'G', 'KC_H': 'H', 'KC_J': 'J', 'KC_K': 'K', 'KC_L': 'L',
-            'KC_SCLN': ';', 'KC_QUOT': "'", 'KC_ENT': '↵', 'KC_NUHS': '#',
-            'KC_LSFT': 'Shift', 'KC_Z': 'Z', 'KC_X': 'X', 'KC_C': 'C', 'KC_V': 'V',
-            'KC_B': 'B', 'KC_N': 'N', 'KC_M': 'M', 'KC_COMM': ',', 'KC_DOT': '.',
-            'KC_SLSH': '/', 'KC_RSFT': 'Shift', 'KC_NUBS': '\\',
-            'KC_LCTL': 'Ctrl', 'KC_LGUI': 'Win', 'KC_LALT': 'Alt', 'KC_SPC': 'Space',
-            'KC_RALT': 'Alt', 'KC_RGUI': 'Win', 'KC_RCTL': 'Ctrl', 'KC_APP': 'Menu',
-            'KC_UP': '↑', 'KC_DOWN': '↓', 'KC_LEFT': '←', 'KC_RGHT': '→',
-            'KC_HOME': 'Home', 'KC_END': 'End', 'KC_PGUP': 'PgUp', 'KC_PGDN': 'PgDn',
-            'KC_INS': 'Ins', 'KC_PSCR': 'PrtSc', 'KC_SCRL': 'ScrLk', 'KC_PAUS': 'Pause',
-            'KC_TRNS': '▽', 'KC_NO': '✕', '_______': '▽', 'XXXXXXX': '✕',
-            'KC_MUTE': '🔇', 'KC_VOLU': '🔊', 'KC_VOLD': '🔉',
-            'KC_MPLY': '⏯', 'KC_MNXT': '⏭', 'KC_MPRV': '⏮', 'KC_MSTP': '⏹',
-            'KC_BRIU': '🔆', 'KC_BRID': '🔅', 'KC_MCTL': 'MCtl', 'KC_LPAD': 'LPad',
-            'RGB_TOG': 'RGB', 'RGB_MOD': 'RGB+', 'RGB_RMOD': 'RGB-',
-            'RGB_HUI': 'Hue+', 'RGB_HUD': 'Hue-', 'RGB_SAI': 'Sat+', 'RGB_SAD': 'Sat-',
-            'RGB_VAI': 'Val+', 'RGB_VAD': 'Val-',
-            'QK_BOOT': 'Boot', 'QK_RBT': 'Reset', 'NK_TOGG': 'NKey',
-            'KC_NUM': 'Num', 'KC_PSLS': '/', 'KC_PAST': '*', 'KC_PMNS': '-',
-            'KC_P7': '7', 'KC_P8': '8', 'KC_P9': '9', 'KC_PPLS': '+',
-            'KC_P4': '4', 'KC_P5': '5', 'KC_P6': '6',
-            'KC_P1': '1', 'KC_P2': '2', 'KC_P3': '3', 'KC_PENT': '↵',
-            'KC_P0': '0', 'KC_PDOT': '.',
+        let keyColors = {
+            bg: '#3a3a4a',
+            text: '#ffffff',
+            border: '#444444'
         };
-
-        // Aliases to normalize
-        const KEYCODE_ALIASES = {
-            '_______': 'KC_TRNS',
-            'XXXXXXX': 'KC_NO',
+        let notes = {
+            tapDance: [],
+            combo: [],
+            macro: []
         };
-
-        // ==================== SETTINGS TOGGLE ====================
-        function toggleSettings() {
-            const content = document.getElementById('settingsContent');
-            const toggle = document.getElementById('settingsToggle');
-            content.classList.toggle('open');
-            toggle.classList.toggle('open');
-        }
-
-        function updateLayerBadge() {
-            const badge = document.getElementById('layerCountBadge');
-            badge.textContent = `${layers.length} layer${layers.length !== 1 ? 's' : ''}`;
-        }
+        const SCALE = 58;
+        const MAX_LAYERS = 16;
 
         // ==================== FILE LOADING ====================
-        function loadKeyboardJson(input) {
-            const file = input.files[0];
+        function loadKeyboardJson(file) {
             if (!file) return;
-
+            
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = (e) => {
                 try {
                     const json = JSON.parse(e.target.result);
                     parseKeyboardJson(json);
-                    setStatus('keyboardJsonStatus', 'success', `✓ ${layoutData.length}キー検出`);
-                    renderKeyboard();
-                    
-                    if (layers.length === 0) {
-                        initializeEmptyLayers();
-                    }
-                    renderLayerTabs();
-                    updateLayerBadge();
+                    setStatus('keyboardJsonStatus', 'success', '✓ 読込完了: ' + (layoutData ? layoutData.length : 0) + 'キー');
                 } catch (err) {
-                    console.error(err);
-                    setStatus('keyboardJsonStatus', 'error', '✕ パース失敗');
+                    setStatus('keyboardJsonStatus', 'error', '✗ パースエラー: ' + err.message);
                 }
             };
             reader.readAsText(file);
@@ -808,411 +834,412 @@
 
         function parseKeyboardJson(json) {
             let layout = null;
-            layoutName = '';
+            layoutName = 'LAYOUT';
             
             if (json.layouts) {
-                const layoutNames = Object.keys(json.layouts);
-                if (layoutNames.length > 0) {
-                    layoutName = layoutNames[0];
-                    layout = json.layouts[layoutName].layout;
+                const layoutKeys = Object.keys(json.layouts);
+                if (layoutKeys.length > 0) {
+                    layoutName = layoutKeys[0];
+                    layout = json.layouts[layoutKeys[0]].layout;
                 }
             } else if (json.layout) {
                 layout = json.layout;
             }
-
+            
             if (!layout) {
-                throw new Error('Layout not found in JSON');
+                throw new Error('レイアウト情報が見つかりません');
             }
 
             layoutData = layout.map((key, index) => ({
-                id: `k${index}`,
+                id: index,
                 x: key.x,
                 y: key.y,
                 w: key.w || 1,
                 h: key.h || 1,
-                label: key.label || ''
+                r: key.r || 0,
+                rx: key.rx || 0,
+                ry: key.ry || 0,
+                encoder: key.encoder !== undefined ? key.encoder : null
             }));
+
+            if (layers.length === 0) {
+                const defaultLayer = { name: 'Base', keys: {} };
+                layoutData.forEach(key => {
+                    defaultLayer.keys[key.id] = 'KC_NO';
+                });
+                layers = [defaultLayer];
+                currentLayer = 0;
+            }
+
+            renderLayerTabs();
+            renderKeyboard();
+            document.getElementById('editorPanel').classList.add('visible');
         }
 
-        function loadKeymapC(input) {
-            const file = input.files[0];
+        function loadKeymapC(file) {
             if (!file) return;
-
+            
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = (e) => {
                 try {
-                    const content = e.target.result;
-                    parseKeymapC(content);
-                    setStatus('keymapCStatus', 'success', `✓ ${layers.length}レイヤー検出`);
-                    renderLayerTabs();
-                    renderKeyboard();
-                    updateLayerBadge();
+                    parseKeymapC(e.target.result);
+                    setStatus('keymapCStatus', 'success', '✓ 読込完了: ' + layers.length + 'レイヤー');
                 } catch (err) {
-                    console.error(err);
-                    setStatus('keymapCStatus', 'error', '✕ パース失敗: ' + err.message);
+                    setStatus('keymapCStatus', 'error', '✗ パースエラー: ' + err.message);
                 }
             };
             reader.readAsText(file);
         }
 
         function parseKeymapC(content) {
-            // Remove comments
-            content = content.replace(/\/\*[\s\S]*?\*\//g, '');
-            content = content.replace(/\/\/.*$/gm, '');
-
-            // Find the keymaps array
-            const keymapsMatch = content.match(/keymaps\s*\[\s*\]\s*\[\s*MATRIX_ROWS\s*\]\s*\[\s*MATRIX_COLS\s*\]\s*=\s*\{([\s\S]*)\};/);
+            const layerRegex = /\[(\w+)\]\s*=\s*\w+\s*\(([\s\S]*?)\)(?=\s*,?\s*(?:\[|};))/g;
+            const matches = [...content.matchAll(layerRegex)];
             
-            if (!keymapsMatch) {
-                throw new Error('keymaps配列が見つかりません');
+            if (matches.length === 0) {
+                throw new Error('レイヤー定義が見つかりません');
             }
 
-            const keymapsContent = keymapsMatch[1];
-            const parsedLayers = [];
-
-            // Parse each layer - improved regex to handle up to 10 layers
-            const layerRegex = /\[\s*_?(\w+)\s*\]\s*=\s*LAYOUT[_\w]*\s*\(([\s\S]*?)\)/g;
-            
-            let match;
-            let layerIndex = 0;
-            
-            while ((match = layerRegex.exec(keymapsContent)) !== null && layerIndex < MAX_LAYERS) {
+            const newLayers = [];
+            matches.forEach((match, idx) => {
                 const layerName = match[1].replace(/^_/, '');
                 const keysStr = match[2];
+                const keycodes = keysStr.split(',').map(k => k.trim()).filter(k => k.length > 0);
                 
-                // Extract keycodes handling nested parentheses
-                const keycodes = parseKeycodes(keysStr);
-
-                // Create layer object
-                const keys = {};
-                keycodes.forEach((kc, idx) => {
-                    // Normalize aliases
-                    const normalizedKc = KEYCODE_ALIASES[kc] || kc;
-                    keys[`k${idx}`] = normalizedKc;
+                const layerObj = { name: layerName, keys: {} };
+                keycodes.forEach((kc, i) => {
+                    layerObj.keys[i] = kc;
                 });
-
-                parsedLayers.push({
-                    name: layerName,
-                    keys: keys
-                });
-                
-                layerIndex++;
-            }
-
-            if (parsedLayers.length === 0) {
-                throw new Error('LAYOUTマクロが見つかりません');
-            }
-
-            layers = parsedLayers;
-            currentLayer = 0;
-        }
-
-        function parseKeycodes(keysStr) {
-            const keycodes = [];
-            let depth = 0;
-            let current = '';
-            
-            for (let i = 0; i < keysStr.length; i++) {
-                const char = keysStr[i];
-                
-                if (char === '(') {
-                    depth++;
-                    current += char;
-                } else if (char === ')') {
-                    depth--;
-                    current += char;
-                } else if (char === ',' && depth === 0) {
-                    const trimmed = current.trim();
-                    if (trimmed && trimmed !== '\\') {
-                        keycodes.push(trimmed);
-                    }
-                    current = '';
-                } else if (char !== '\n' && char !== '\r' && char !== '\\') {
-                    current += char;
-                } else if (char === '\\') {
-                    // Skip backslash line continuations
-                    continue;
-                }
-            }
-            
-            // Don't forget the last one
-            const lastTrimmed = current.trim();
-            if (lastTrimmed && lastTrimmed !== '\\') {
-                keycodes.push(lastTrimmed);
-            }
-
-            return keycodes;
-        }
-
-        function initializeEmptyLayers() {
-            if (!layoutData) return;
-            
-            layers = [{
-                name: 'Base',
-                keys: {}
-            }];
-            
-            layoutData.forEach(key => {
-                layers[0].keys[key.id] = 'KC_NO';
+                newLayers.push(layerObj);
             });
+
+            if (newLayers.length > 0) {
+                layers = newLayers;
+                currentLayer = 0;
+                renderLayerTabs();
+                renderKeyboard();
+                updateLayerBadge();
+            }
         }
 
         function setStatus(elementId, type, message) {
             const el = document.getElementById(elementId);
-            el.className = 'import-status ' + type;
             el.textContent = message;
+            el.className = 'status ' + type;
         }
 
-        // ==================== SAMPLE LAYOUT ====================
-        function loadSampleLayout() {
-            layoutData = [
-                {id:'k0',x:0,y:0,w:1,h:1},{id:'k1',x:1.25,y:0,w:1,h:1},{id:'k2',x:2.25,y:0,w:1,h:1},
-                {id:'k3',x:3.25,y:0,w:1,h:1},{id:'k4',x:4.25,y:0,w:1,h:1},{id:'k5',x:5.5,y:0,w:1,h:1},
-                {id:'k6',x:6.5,y:0,w:1,h:1},{id:'k7',x:7.5,y:0,w:1,h:1},{id:'k8',x:8.5,y:0,w:1,h:1},
-                {id:'k9',x:9.75,y:0,w:1,h:1},{id:'k10',x:10.75,y:0,w:1,h:1},{id:'k11',x:11.75,y:0,w:1,h:1},
-                {id:'k12',x:12.75,y:0,w:1,h:1},{id:'k13',x:14,y:0,w:1,h:1},{id:'k14',x:15.25,y:0,w:1,h:1},
-                {id:'k15',x:0,y:1.25,w:1,h:1},{id:'k16',x:1,y:1.25,w:1,h:1},{id:'k17',x:2,y:1.25,w:1,h:1},
-                {id:'k18',x:3,y:1.25,w:1,h:1},{id:'k19',x:4,y:1.25,w:1,h:1},{id:'k20',x:5,y:1.25,w:1,h:1},
-                {id:'k21',x:6,y:1.25,w:1,h:1},{id:'k22',x:7,y:1.25,w:1,h:1},{id:'k23',x:8,y:1.25,w:1,h:1},
-                {id:'k24',x:9,y:1.25,w:1,h:1},{id:'k25',x:10,y:1.25,w:1,h:1},{id:'k26',x:11,y:1.25,w:1,h:1},
-                {id:'k27',x:12,y:1.25,w:1,h:1},{id:'k28',x:13,y:1.25,w:2,h:1},{id:'k29',x:15.25,y:1.25,w:1,h:1},
-                {id:'k30',x:0,y:2.25,w:1.5,h:1},{id:'k31',x:1.5,y:2.25,w:1,h:1},{id:'k32',x:2.5,y:2.25,w:1,h:1},
-                {id:'k33',x:3.5,y:2.25,w:1,h:1},{id:'k34',x:4.5,y:2.25,w:1,h:1},{id:'k35',x:5.5,y:2.25,w:1,h:1},
-                {id:'k36',x:6.5,y:2.25,w:1,h:1},{id:'k37',x:7.5,y:2.25,w:1,h:1},{id:'k38',x:8.5,y:2.25,w:1,h:1},
-                {id:'k39',x:9.5,y:2.25,w:1,h:1},{id:'k40',x:10.5,y:2.25,w:1,h:1},{id:'k41',x:11.5,y:2.25,w:1,h:1},
-                {id:'k42',x:12.5,y:2.25,w:1,h:1},{id:'k43',x:13.5,y:2.25,w:1.5,h:1},{id:'k44',x:15.25,y:2.25,w:1,h:1},
-                {id:'k45',x:0,y:3.25,w:1.75,h:1},{id:'k46',x:1.75,y:3.25,w:1,h:1},{id:'k47',x:2.75,y:3.25,w:1,h:1},
-                {id:'k48',x:3.75,y:3.25,w:1,h:1},{id:'k49',x:4.75,y:3.25,w:1,h:1},{id:'k50',x:5.75,y:3.25,w:1,h:1},
-                {id:'k51',x:6.75,y:3.25,w:1,h:1},{id:'k52',x:7.75,y:3.25,w:1,h:1},{id:'k53',x:8.75,y:3.25,w:1,h:1},
-                {id:'k54',x:9.75,y:3.25,w:1,h:1},{id:'k55',x:10.75,y:3.25,w:1,h:1},{id:'k56',x:11.75,y:3.25,w:1,h:1},
-                {id:'k57',x:12.75,y:3.25,w:2.25,h:1},{id:'k58',x:15.25,y:3.25,w:1,h:1},
-                {id:'k59',x:0,y:4.25,w:2.25,h:1},{id:'k60',x:2.25,y:4.25,w:1,h:1},{id:'k61',x:3.25,y:4.25,w:1,h:1},
-                {id:'k62',x:4.25,y:4.25,w:1,h:1},{id:'k63',x:5.25,y:4.25,w:1,h:1},{id:'k64',x:6.25,y:4.25,w:1,h:1},
-                {id:'k65',x:7.25,y:4.25,w:1,h:1},{id:'k66',x:8.25,y:4.25,w:1,h:1},{id:'k67',x:9.25,y:4.25,w:1,h:1},
-                {id:'k68',x:10.25,y:4.25,w:1,h:1},{id:'k69',x:11.25,y:4.25,w:1,h:1},{id:'k70',x:12.25,y:4.25,w:1.75,h:1},
-                {id:'k71',x:14.25,y:4.25,w:1,h:1},{id:'k72',x:15.25,y:4.25,w:1,h:1},
-                {id:'k73',x:0,y:5.25,w:1.25,h:1},{id:'k74',x:1.25,y:5.25,w:1.25,h:1},{id:'k75',x:2.5,y:5.25,w:1.25,h:1},
-                {id:'k76',x:3.75,y:5.25,w:6.25,h:1},{id:'k77',x:10,y:5.25,w:1.25,h:1},{id:'k78',x:11.25,y:5.25,w:1.25,h:1},
-                {id:'k79',x:12.5,y:5.25,w:1.25,h:1},{id:'k80',x:13.25,y:5.25,w:1,h:1},{id:'k81',x:14.25,y:5.25,w:1,h:1},
-                {id:'k82',x:15.25,y:5.25,w:1,h:1}
-            ];
+        // ==================== RENDERING ====================
+        function renderLayerTabs() {
+            const container = document.getElementById('layerTabs');
+            container.innerHTML = '';
             
-            layoutName = 'LAYOUT_ansi_82';
+            layers.forEach((layer, index) => {
+                const tab = document.createElement('div');
+                tab.className = 'layer-tab' + (index === currentLayer ? ' active' : '');
+                tab.innerHTML = `
+                    <span onclick="switchLayer(${index})">${layer.name}</span>
+                    <button class="delete-layer" onclick="event.stopPropagation(); deleteLayer(${index})">×</button>
+                `;
+                container.appendChild(tab);
+            });
+        }
 
-            layers = [
-                {
-                    name: 'MAC_BASE',
-                    keys: {
-                        'k0':'KC_ESC','k1':'KC_BRID','k2':'KC_BRIU','k3':'KC_MCTL','k4':'KC_LPAD',
-                        'k5':'RGB_VAD','k6':'RGB_VAI','k7':'KC_MPRV','k8':'KC_MPLY','k9':'KC_MNXT',
-                        'k10':'KC_MUTE','k11':'KC_VOLD','k12':'KC_VOLU','k13':'KC_DEL','k14':'KC_MUTE',
-                        'k15':'KC_GRV','k16':'KC_1','k17':'KC_2','k18':'KC_3','k19':'KC_4',
-                        'k20':'KC_5','k21':'KC_6','k22':'KC_7','k23':'KC_8','k24':'KC_9',
-                        'k25':'KC_0','k26':'KC_MINS','k27':'KC_EQL','k28':'KC_BSPC','k29':'KC_PGUP',
-                        'k30':'KC_TAB','k31':'KC_Q','k32':'KC_W','k33':'KC_E','k34':'KC_R',
-                        'k35':'KC_T','k36':'KC_Y','k37':'KC_U','k38':'KC_I','k39':'KC_O',
-                        'k40':'KC_P','k41':'KC_LBRC','k42':'KC_RBRC','k43':'KC_BSLS','k44':'KC_PGDN',
-                        'k45':'KC_CAPS','k46':'KC_A','k47':'KC_S','k48':'KC_D','k49':'KC_F',
-                        'k50':'KC_G','k51':'KC_H','k52':'KC_J','k53':'KC_K','k54':'KC_L',
-                        'k55':'KC_SCLN','k56':'KC_QUOT','k57':'KC_ENT','k58':'KC_HOME',
-                        'k59':'KC_LSFT','k60':'KC_Z','k61':'KC_X','k62':'KC_C','k63':'KC_V',
-                        'k64':'KC_B','k65':'KC_N','k66':'KC_M','k67':'KC_COMM','k68':'KC_DOT',
-                        'k69':'KC_SLSH','k70':'KC_RSFT','k71':'KC_UP','k72':'KC_END',
-                        'k73':'KC_LCTL','k74':'KC_LALT','k75':'KC_LGUI','k76':'KC_SPC',
-                        'k77':'KC_RGUI','k78':'MO(1)','k79':'KC_RCTL','k80':'KC_LEFT',
-                        'k81':'KC_DOWN','k82':'KC_RGHT'
+        function renderKeyboard() {
+            const container = document.getElementById('keyboardContainer');
+            container.innerHTML = '';
+            
+            if (!layoutData) {
+                container.innerHTML = '<p style="color: #666; text-align: center; padding: 50px;">keyboard.jsonを読み込んでください</p>';
+                return;
+            }
+
+            let minX = Infinity, maxX = -Infinity;
+            let minY = Infinity, maxY = -Infinity;
+
+            layoutData.forEach(key => {
+                minX = Math.min(minX, key.x);
+                maxX = Math.max(maxX, key.x + (key.w || 1));
+                minY = Math.min(minY, key.y);
+                maxY = Math.max(maxY, key.y + (key.h || 1));
+            });
+
+            const width = (maxX - minX) * SCALE + 40;
+            const height = (maxY - minY) * SCALE + 40;
+            
+            container.style.width = width + 'px';
+            container.style.height = height + 'px';
+
+            // エンコーダーをグループ化
+            const encoderGroups = {};
+            layoutData.forEach(key => {
+                if (key.encoder !== null && key.encoder !== undefined) {
+                    if (!encoderGroups[key.encoder]) {
+                        encoderGroups[key.encoder] = [];
                     }
-                },
-                {
-                    name: 'MAC_FN',
-                    keys: Object.fromEntries([...Array(83)].map((_, i) => [`k${i}`, 'KC_TRNS']))
-                },
-                {
-                    name: 'WIN_BASE',
-                    keys: {
-                        'k0':'KC_ESC','k1':'KC_F1','k2':'KC_F2','k3':'KC_F3','k4':'KC_F4',
-                        'k5':'KC_F5','k6':'KC_F6','k7':'KC_F7','k8':'KC_F8','k9':'KC_F9',
-                        'k10':'KC_F10','k11':'KC_F11','k12':'KC_F12','k13':'KC_DEL','k14':'KC_MUTE',
-                        'k15':'KC_GRV','k16':'KC_1','k17':'KC_2','k18':'KC_3','k19':'KC_4',
-                        'k20':'KC_5','k21':'KC_6','k22':'KC_7','k23':'KC_8','k24':'KC_9',
-                        'k25':'KC_0','k26':'KC_MINS','k27':'KC_EQL','k28':'KC_BSPC','k29':'KC_PGUP',
-                        'k30':'KC_TAB','k31':'KC_Q','k32':'KC_W','k33':'KC_E','k34':'KC_R',
-                        'k35':'KC_T','k36':'KC_Y','k37':'KC_U','k38':'KC_I','k39':'KC_O',
-                        'k40':'KC_P','k41':'KC_LBRC','k42':'KC_RBRC','k43':'KC_BSLS','k44':'KC_PGDN',
-                        'k45':'KC_CAPS','k46':'KC_A','k47':'KC_S','k48':'KC_D','k49':'KC_F',
-                        'k50':'KC_G','k51':'KC_H','k52':'KC_J','k53':'KC_K','k54':'KC_L',
-                        'k55':'KC_SCLN','k56':'KC_QUOT','k57':'KC_ENT','k58':'KC_HOME',
-                        'k59':'KC_LSFT','k60':'KC_Z','k61':'KC_X','k62':'KC_C','k63':'KC_V',
-                        'k64':'KC_B','k65':'KC_N','k66':'KC_M','k67':'KC_COMM','k68':'KC_DOT',
-                        'k69':'KC_SLSH','k70':'KC_RSFT','k71':'KC_UP','k72':'KC_END',
-                        'k73':'KC_LCTL','k74':'KC_LGUI','k75':'KC_LALT','k76':'KC_SPC',
-                        'k77':'KC_RALT','k78':'MO(3)','k79':'KC_RCTL','k80':'KC_LEFT',
-                        'k81':'KC_DOWN','k82':'KC_RGHT'
-                    }
-                },
-                {
-                    name: 'WIN_FN',
-                    keys: Object.fromEntries([...Array(83)].map((_, i) => [`k${i}`, 'KC_TRNS']))
+                    encoderGroups[key.encoder].push(key);
                 }
+            });
+
+            // 通常キーを描画
+            layoutData.forEach(key => {
+                if (key.encoder !== null && key.encoder !== undefined) return;
+
+                const keyEl = createKeyElement(key, minX, minY);
+                container.appendChild(keyEl);
+            });
+
+            // エンコーダーグループを描画
+            Object.entries(encoderGroups).forEach(([encoderIndex, keys]) => {
+                renderEncoderGroup(container, keys, encoderIndex, minX, minY);
+            });
+
+            updateLayerInfo();
+        }
+
+        function renderEncoderGroup(container, keys, encoderIndex, minX, minY) {
+            // エンコーダーの位置を計算（最初のキーの位置を基準）
+            const baseKey = keys[0];
+            const groupX = (baseKey.x - minX) * SCALE + 20;
+            const groupY = (baseKey.y - minY) * SCALE + 20;
+
+            const group = document.createElement('div');
+            group.className = 'encoder-group';
+            group.style.left = groupX + 'px';
+            group.style.top = groupY + 'px';
+
+            // 3つのエンコーダー機能を表示
+            const encoderFunctions = [
+                { label: '左回転', suffix: '_CCW', offsetX: 0, offsetY: 0 },
+                { label: 'プッシュ', suffix: '_PUSH', offsetX: 45, offsetY: 0 },
+                { label: '右回転', suffix: '_CW', offsetX: 90, offsetY: 0 }
             ];
 
-            setStatus('keyboardJsonStatus', 'success', '✓ サンプル読込完了');
+            encoderFunctions.forEach((func, idx) => {
+                const virtualKey = keys[idx] || keys[0];
+                const keyId = virtualKey.id;
+                
+                const keyEl = document.createElement('div');
+                keyEl.className = 'key encoder-key';
+                if (selectedKey === keyId + func.suffix) {
+                    keyEl.classList.add('selected');
+                }
+                
+                const w = 40;
+                const h = 40;
+                keyEl.style.width = w + 'px';
+                keyEl.style.height = h + 'px';
+                keyEl.style.position = 'absolute';
+                keyEl.style.left = func.offsetX + 'px';
+                keyEl.style.top = func.offsetY + 'px';
+                keyEl.style.background = `linear-gradient(145deg, ${keyColors.bg}, ${adjustColor(keyColors.bg, -20)})`;
+                keyEl.style.color = keyColors.text;
+                keyEl.style.borderColor = keyColors.border;
+
+                const layer = layers[currentLayer];
+                const encoderKeyId = `enc${encoderIndex}${func.suffix}`;
+                const keycode = layer && layer.keys[encoderKeyId] ? layer.keys[encoderKeyId] : 'KC_NO';
+                keyEl.textContent = formatKeycode(keycode);
+                keyEl.title = `Encoder ${encoderIndex} ${func.label}: ${keycode}`;
+
+                keyEl.onclick = () => selectEncoderKey(encoderIndex, func.suffix, encoderKeyId);
+                group.appendChild(keyEl);
+
+                // ラベル
+                const label = document.createElement('div');
+                label.className = 'encoder-label';
+                label.textContent = func.label;
+                label.style.position = 'absolute';
+                label.style.left = (func.offsetX + 5) + 'px';
+                label.style.top = '45px';
+                group.appendChild(label);
+            });
+
+            container.appendChild(group);
+        }
+
+        function createKeyElement(key, minX, minY) {
+            const keyEl = document.createElement('div');
+            keyEl.className = 'key';
+            if (selectedKey === key.id) {
+                keyEl.classList.add('selected');
+            }
+
+            const x = (key.x - minX) * SCALE + 20;
+            const y = (key.y - minY) * SCALE + 20;
+            const w = (key.w || 1) * SCALE - 4;
+            const h = (key.h || 1) * SCALE - 4;
+
+            keyEl.style.left = x + 'px';
+            keyEl.style.top = y + 'px';
+            keyEl.style.width = w + 'px';
+            keyEl.style.height = h + 'px';
+            keyEl.style.background = `linear-gradient(145deg, ${keyColors.bg}, ${adjustColor(keyColors.bg, -20)})`;
+            keyEl.style.color = keyColors.text;
+            keyEl.style.borderColor = keyColors.border;
+
+            if (key.r) {
+                const rx = (key.rx - minX) * SCALE + 20;
+                const ry = (key.ry - minY) * SCALE + 20;
+                keyEl.style.transformOrigin = `${rx - x}px ${ry - y}px`;
+                keyEl.style.transform = `rotate(${key.r}deg)`;
+            }
+
+            const layer = layers[currentLayer];
+            const keycode = layer && layer.keys[key.id] ? layer.keys[key.id] : 'KC_NO';
+            keyEl.textContent = formatKeycode(keycode);
+            keyEl.title = `Key ${key.id}: ${keycode}`;
+
+            keyEl.onclick = () => selectKey(key.id);
+
+            return keyEl;
+        }
+
+        function adjustColor(color, amount) {
+            const hex = color.replace('#', '');
+            const r = Math.max(0, Math.min(255, parseInt(hex.substr(0, 2), 16) + amount));
+            const g = Math.max(0, Math.min(255, parseInt(hex.substr(2, 2), 16) + amount));
+            const b = Math.max(0, Math.min(255, parseInt(hex.substr(4, 2), 16) + amount));
+            return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+        }
+
+        function formatKeycode(kc) {
+            if (!kc) return '-';
+            if (kc === 'KC_TRNS' || kc === '_______') return '▽';
+            if (kc === 'KC_NO' || kc === 'XXXXXXX') return '✕';
+            return kc.replace('KC_', '').substring(0, 8);
+        }
+
+        function updateKeyColors() {
+            keyColors.bg = document.getElementById('keyBgColor').value;
+            keyColors.text = document.getElementById('keyTextColor').value;
+            keyColors.border = document.getElementById('keyBorderColor').value;
+            
+            const preview = document.getElementById('colorPreview');
+            preview.style.background = keyColors.bg;
+            preview.style.color = keyColors.text;
+            preview.style.border = `2px solid ${keyColors.border}`;
+            
+            renderKeyboard();
+        }
+
+        // ==================== KEY SELECTION & EDITING ====================
+        function selectKey(keyId) {
+            selectedKey = keyId;
+            document.getElementById('selectedKeyId').textContent = 'Key ' + keyId;
+            
+            const layer = layers[currentLayer];
+            const keycode = layer.keys[keyId] || 'KC_NO';
+            document.getElementById('keycodeInput').value = keycode;
+            
+            document.getElementById('editorPanel').classList.add('visible');
+            renderKeyboard();
+        }
+
+        function selectEncoderKey(encoderIndex, suffix, keyId) {
+            selectedKey = keyId;
+            document.getElementById('selectedKeyId').textContent = `Encoder ${encoderIndex} ${suffix}`;
+            
+            const layer = layers[currentLayer];
+            if (!layer.keys[keyId]) {
+                layer.keys[keyId] = 'KC_NO';
+            }
+            const keycode = layer.keys[keyId];
+            document.getElementById('keycodeInput').value = keycode;
+            
+            document.getElementById('editorPanel').classList.add('visible');
+            renderKeyboard();
+        }
+
+        function updateKeycode(value) {
+            if (selectedKey === null || !layers[currentLayer]) return;
+            layers[currentLayer].keys[selectedKey] = value;
+            renderKeyboard();
+        }
+
+        function switchLayer(index) {
+            currentLayer = index;
             renderLayerTabs();
             renderKeyboard();
             updateLayerBadge();
         }
 
-        // ==================== RENDERING ====================
-        function getDisplayName(keycode) {
-            if (!keycode) return '?';
-            
-            // Normalize first
-            const normalizedKc = KEYCODE_ALIASES[keycode] || keycode;
-            
-            if (KEYCODE_DISPLAY[normalizedKc]) return KEYCODE_DISPLAY[normalizedKc];
-            
-            const moMatch = normalizedKc.match(/^MO\((\d+)\)/);
-            if (moMatch) return `MO${moMatch[1]}`;
-            
-            const tgMatch = normalizedKc.match(/^TG\((\d+)\)/);
-            if (tgMatch) return `TG${tgMatch[1]}`;
-            
-            const toMatch = normalizedKc.match(/^TO\((\d+)\)/);
-            if (toMatch) return `TO${toMatch[1]}`;
-            
-            const ltMatch = normalizedKc.match(/^LT\((\d+),\s*(\w+)\)/);
-            if (ltMatch) {
-                const baseKey = KEYCODE_DISPLAY[ltMatch[2]] || ltMatch[2].replace('KC_', '');
-                return `LT${ltMatch[1]}/${baseKey}`;
+        function updateLayerBadge() {
+            const badge = document.getElementById('layerBadge');
+            if (layers[currentLayer]) {
+                badge.textContent = 'Layer: ' + layers[currentLayer].name;
             }
-
-            return normalizedKc.replace('KC_', '').substring(0, 6);
         }
 
-        function getKeyClass(keycode) {
-            if (!keycode) return '';
-            const normalizedKc = KEYCODE_ALIASES[keycode] || keycode;
+        function updateLayerInfo() {
+            if (!layers[currentLayer]) return;
             
-            if (normalizedKc === 'KC_TRNS' || normalizedKc === '_______') return 'transparent';
-            if (normalizedKc === 'KC_NO' || normalizedKc === 'XXXXXXX') return 'transparent';
-            if (normalizedKc.match(/^(KC_LCTL|KC_RCTL|KC_LSFT|KC_RSFT|KC_LALT|KC_RALT|KC_LGUI|KC_RGUI)/)) return 'modifier';
-            if (normalizedKc.match(/^(MO|TG|LT|TO|OSL)\(/)) return 'layer-key';
-            return '';
+            document.getElementById('currentLayerName').textContent = layers[currentLayer].name;
+            document.getElementById('totalKeys').textContent = layoutData ? layoutData.length : 0;
+            
+            const configured = Object.values(layers[currentLayer].keys).filter(k => k && k !== 'KC_NO' && k !== 'KC_TRNS').length;
+            document.getElementById('configuredKeys').textContent = configured;
         }
 
-        function renderLayerTabs() {
-            const container = document.getElementById('layerTabs');
-            if (layers.length === 0) {
-                container.innerHTML = '';
-                return;
+        function showCategory(category) {
+            document.querySelectorAll('.keycode-quick').forEach(el => el.classList.remove('visible'));
+            document.querySelectorAll('.category-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(category + 'Keycodes').classList.add('visible');
+            event.target.classList.add('active');
+        }
+
+        function previewKeymap() {
+            const content = generateKeymapC();
+            if (!content) return;
+            
+            document.getElementById('outputCode').textContent = content;
+            document.getElementById('outputArea').style.display = 'block';
+        }
+
+        // ==================== NOTES MANAGEMENT ====================
+        function addNote(type) {
+            const note = {
+                id: Date.now(),
+                name: '',
+                description: ''
+            };
+            notes[type].push(note);
+            renderNotes(type);
+        }
+
+        function deleteNote(type, id) {
+            notes[type] = notes[type].filter(n => n.id !== id);
+            renderNotes(type);
+        }
+
+        function updateNote(type, id, field, value) {
+            const note = notes[type].find(n => n.id === id);
+            if (note) {
+                note[field] = value;
             }
-            
-            container.innerHTML = layers.map((layer, i) => `
-                <button class="layer-tab ${i === currentLayer ? 'active' : ''}" onclick="switchLayer(${i})">
-                    ${i}: ${layer.name}
-                    ${layers.length > 1 ? `<span class="delete-layer" onclick="event.stopPropagation(); deleteLayer(${i})">×</span>` : ''}
-                </button>
-            `).join('');
         }
 
-        function renderKeyboard() {
-            const container = document.getElementById('keyboard');
+        function renderNotes(type) {
+            const container = document.getElementById(type + 'Notes');
+            container.innerHTML = '';
             
-            if (!layoutData || layoutData.length === 0) {
-                container.innerHTML = `
-                    <div class="no-layout">
-                        <p>⬇️ 下の「設定」からファイルを読み込んでください</p>
-                        <p>または下のサンプルを使用:</p>
-                        <button class="btn btn-primary" onclick="loadSampleLayout()" style="margin-top: 10px;">
-                            Q1 HE サンプルを読み込む
-                        </button>
-                    </div>
+            notes[type].forEach(note => {
+                const item = document.createElement('div');
+                item.className = 'note-item';
+                item.innerHTML = `
+                    <input type="text" placeholder="名前 (例: TD_ESC)" value="${note.name}" 
+                           onchange="updateNote('${type}', ${note.id}, 'name', this.value)">
+                    <input type="text" placeholder="説明 (例: 1回タップ=Esc, 2回タップ=CapsLock)" value="${note.description}"
+                           onchange="updateNote('${type}', ${note.id}, 'description', this.value)">
+                    <button class="delete-note" onclick="deleteNote('${type}', ${note.id})">×</button>
                 `;
-                return;
-            }
-
-            let maxX = 0, maxY = 0;
-            layoutData.forEach(key => {
-                const right = key.x + key.w;
-                const bottom = key.y + key.h;
-                if (right > maxX) maxX = right;
-                if (bottom > maxY) maxY = bottom;
-            });
-
-            container.style.width = (maxX * SCALE + 40) + 'px';
-            container.style.height = (maxY * SCALE + 40) + 'px';
-
-            const layerKeys = layers[currentLayer]?.keys || {};
-            
-            container.innerHTML = layoutData.map(key => {
-                const keycode = layerKeys[key.id] || 'KC_NO';
-                const displayName = getDisplayName(keycode);
-                const keyClass = getKeyClass(keycode);
-                const selectedClass = selectedKey === key.id ? 'selected' : '';
-                
-                const style = `
-                    left: ${key.x * SCALE}px;
-                    top: ${key.y * SCALE}px;
-                    width: ${key.w * SCALE - 4}px;
-                    height: ${key.h * SCALE - 4}px;
-                `;
-                
-                return `<div class="key ${keyClass} ${selectedClass}" 
-                            style="${style}"
-                            data-id="${key.id}"
-                            onclick="selectKey('${key.id}')"
-                            title="${keycode}">
-                            ${displayName}
-                        </div>`;
-            }).join('');
-        }
-
-        // ==================== INTERACTIONS ====================
-        function switchLayer(index) {
-            currentLayer = index;
-            selectedKey = null;
-            document.getElementById('editorPanel').style.display = 'none';
-            renderLayerTabs();
-            renderKeyboard();
-        }
-
-        function selectKey(keyId) {
-            selectedKey = keyId;
-            const keycode = layers[currentLayer]?.keys[keyId] || 'KC_NO';
-            
-            document.getElementById('editorPanel').style.display = 'block';
-            document.getElementById('editingKeyName').textContent = `Layer ${currentLayer} - ${keyId}`;
-            document.getElementById('keycodeInput').value = keycode;
-            
-            renderKeyboard();
-        }
-
-        function applyKeycode() {
-            if (!selectedKey || !layers[currentLayer]) return;
-            
-            const keycode = document.getElementById('keycodeInput').value.trim();
-            if (keycode) {
-                // Normalize on apply
-                const normalizedKc = KEYCODE_ALIASES[keycode] || keycode;
-                layers[currentLayer].keys[selectedKey] = normalizedKc;
-                renderKeyboard();
-            }
-        }
-
-        function closeEditor() {
-            selectedKey = null;
-            document.getElementById('editorPanel').style.display = 'none';
-            renderKeyboard();
-        }
-
-        function switchQuickTab(index) {
-            document.querySelectorAll('.tab').forEach((tab, i) => {
-                tab.classList.toggle('active', i === index);
-            });
-            document.querySelectorAll('.tab-content').forEach((content, i) => {
-                content.classList.toggle('active', i === index);
+                container.appendChild(item);
             });
         }
+
+        // Initialize notes
+        renderNotes('tapDance');
+        renderNotes('combo');
+        renderNotes('macro');
 
         // ==================== LAYER MANAGEMENT ====================
         function addLayer() {
@@ -1261,14 +1288,18 @@
                 layers = [];
                 currentLayer = 0;
                 selectedKey = null;
+                notes = { tapDance: [], combo: [], macro: [] };
                 document.getElementById('keyboardJsonFile').value = '';
                 document.getElementById('keymapCFile').value = '';
                 document.getElementById('keyboardJsonStatus').textContent = '';
                 document.getElementById('keymapCStatus').textContent = '';
-                document.getElementById('editorPanel').style.display = 'none';
+                document.getElementById('editorPanel').classList.remove('visible');
                 renderLayerTabs();
                 renderKeyboard();
                 updateLayerBadge();
+                renderNotes('tapDance');
+                renderNotes('combo');
+                renderNotes('macro');
             }
         }
 
@@ -1277,7 +1308,9 @@
             const data = {
                 layoutData,
                 layoutName,
-                layers
+                layers,
+                keyColors,
+                notes
             };
             localStorage.setItem('qmk-keymap-editor', JSON.stringify(data));
             alert('保存しました！');
@@ -1290,11 +1323,22 @@
                 layoutData = data.layoutData;
                 layoutName = data.layoutName || 'LAYOUT';
                 layers = data.layers;
+                keyColors = data.keyColors || { bg: '#3a3a4a', text: '#ffffff', border: '#444444' };
+                notes = data.notes || { tapDance: [], combo: [], macro: [] };
                 currentLayer = 0;
+                
+                document.getElementById('keyBgColor').value = keyColors.bg;
+                document.getElementById('keyTextColor').value = keyColors.text;
+                document.getElementById('keyBorderColor').value = keyColors.border;
+                updateKeyColors();
+                
                 setStatus('keyboardJsonStatus', 'success', '✓ 保存データ読込');
                 renderLayerTabs();
                 renderKeyboard();
                 updateLayerBadge();
+                renderNotes('tapDance');
+                renderNotes('combo');
+                renderNotes('macro');
                 alert('読み込みました！');
             } else {
                 alert('保存されたデータがありません');
@@ -1305,7 +1349,9 @@
             const data = {
                 layoutData,
                 layoutName,
-                layers
+                layers,
+                keyColors,
+                notes
             };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             downloadBlob(blob, 'keymap-data.json');
@@ -1329,7 +1375,41 @@ enum layers {
 ${layers.map((l, i) => `    _${l.name.toUpperCase().replace(/[^A-Z0-9]/g, '_')} = ${i}`).join(',\n')}
 };
 
-const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
+`;
+            // タップダンスのメモを追加
+            if (notes.tapDance.length > 0) {
+                output += `// Tap Dance Definitions\n`;
+                notes.tapDance.forEach(note => {
+                    if (note.name) {
+                        output += `// ${note.name}: ${note.description}\n`;
+                    }
+                });
+                output += '\n';
+            }
+
+            // コンボのメモを追加
+            if (notes.combo.length > 0) {
+                output += `// Combo Definitions\n`;
+                notes.combo.forEach(note => {
+                    if (note.name) {
+                        output += `// ${note.name}: ${note.description}\n`;
+                    }
+                });
+                output += '\n';
+            }
+
+            // マクロのメモを追加
+            if (notes.macro.length > 0) {
+                output += `// Macro / Other Notes\n`;
+                notes.macro.forEach(note => {
+                    if (note.name) {
+                        output += `// ${note.name}: ${note.description}\n`;
+                    }
+                });
+                output += '\n';
+            }
+
+            output += `const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 `;
 
             layers.forEach((layer, layerIndex) => {
@@ -1380,9 +1460,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
             container.addEventListener('click', (e) => {
                 if (e.target.classList.contains('keycode-btn')) {
                     document.getElementById('keycodeInput').value = e.target.dataset.kc;
+                    updateKeycode(e.target.dataset.kc);
                 }
             });
         });
+
+        // Initialize color preview
+        updateKeyColors();
 
         // Initialize
         renderLayerTabs();
