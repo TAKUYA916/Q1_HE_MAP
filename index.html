@@ -1018,6 +1018,12 @@
                                 <option value="slot10">スロット 10</option>
                             </select>
                         </div>
+                        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+                            <label style="min-width: 80px;">スロット名:</label>
+                            <input type="text" id="slotNameInput" placeholder="スロットの名前を入力"
+                                   style="flex: 1; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; padding: 8px; color: #fff;"
+                                   oninput="updateCurrentSlotName()">
+                        </div>
                         <div id="cloudStatus" style="font-size: 0.85em; color: #888; margin-bottom: 10px;"></div>
                     </div>
                     <div class="actions">
@@ -1026,52 +1032,6 @@
                     </div>
                 </div>
 
-                <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
-
-                <!-- GitHub URL読み込みセクション -->
-                <div style="margin-bottom: 20px;">
-                    <h4 style="color: #00d4ff; margin-bottom: 10px;">🔗 GitHub URL から読み込み</h4>
-                    <div class="gist-settings">
-                        <div class="gist-input" style="margin-bottom: 10px;">
-                            <input type="text" id="githubKeyboardJsonUrl"
-                                   placeholder="keyboard.json の GitHub raw URL"
-                                   value="https://raw.githubusercontent.com/TAKUYA916/qmk_firmware/2025q3/keyboards/keychron/q1_he/ansi_encoder/keyboard.json">
-                        </div>
-                        <div class="gist-input" style="margin-bottom: 10px;">
-                            <input type="text" id="githubKeymapCUrl"
-                                   placeholder="keymap.c の GitHub raw URL"
-                                   value="https://raw.githubusercontent.com/TAKUYA916/qmk_firmware/2025q3/keyboards/keychron/q1_he/ansi_encoder/keymaps/my_map/keymap.c">
-                        </div>
-                        <div id="githubStatus" style="font-size: 0.85em; color: #888; margin-bottom: 10px;"></div>
-                    </div>
-                    <div class="actions">
-                        <button class="btn" onclick="loadFromGitHub()">🔗 GitHubから読み込み</button>
-                    </div>
-                </div>
-
-                <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
-
-                <div style="margin-bottom: 20px;">
-                    <h4 style="color: #00d4ff; margin-bottom: 10px;">GitHub Gist 連携</h4>
-                    <div class="gist-settings">
-                        <div class="gist-input">
-                            <input type="password" id="gistToken" placeholder="GitHub Personal Access Token (gist権限)"
-                                   value="" onchange="saveGistToken()">
-                        </div>
-                        <div class="gist-input">
-                            <input type="text" id="gistId" placeholder="Gist ID (保存後に自動入力、または読み込み時に入力)" >
-                        </div>
-                        <div style="font-size: 0.85em; color: #888; margin-top: 5px;">
-                            ※ トークンは <a href="https://github.com/settings/tokens" target="_blank" style="color: #00d4ff;">GitHub Settings</a> から作成 (gist権限のみでOK)
-                        </div>
-                    </div>
-                    <div class="actions" style="margin-top: 10px;">
-                        <button class="btn" onclick="saveToGist()">☁️ Gistに保存</button>
-                        <button class="btn btn-secondary" onclick="loadFromGist()">☁️ Gistから読込</button>
-                    </div>
-                </div>
-
-                <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
 
                 <div style="margin-bottom: 20px;">
                     <h4 style="color: #00d4ff; margin-bottom: 10px;">ローカル保存</h4>
@@ -1105,9 +1065,10 @@
         let selectedEncoderSide = null; // 'ccw', 'cw', 'push', or null (default standard key)
         let keyColors = { bg: '#3a3a4a', text: '#ffffff', border: '#444444' };
         let individualKeyColors = {}; // { keyId: { bg, text } }
-        let encoderKeys = {}; // { keyId: { ccw, push, cw } }
+        let slotNames = {}; // { slot1: '名前', ... }
         let notes = { tapDance: [], combo: [], macro: [] };
         let nextNoteId = { tapDance: 1, combo: 1, macro: 1 };
+        let originalKeymapC = null; // 元のkeymap.cの内容を保持
         let keyboardScalePercent = 100; // パーセント
         let keyFontSize = 11; // px
         let keyFont = "'Segoe UI', sans-serif";
@@ -1119,6 +1080,17 @@
         let gistId = localStorage.getItem('gist-id') || '';
         if (gistToken) document.getElementById('gistToken').value = gistToken;
         if (gistId) document.getElementById('gistId').value = gistId;
+
+        // スロット切り替え時の処理
+        document.getElementById('cloudSlot').addEventListener('change', (e) => {
+            const slot = e.target.value;
+            document.getElementById('slotNameInput').value = slotNames[slot] || '';
+        });
+
+        function updateCurrentSlotName() {
+            const slot = document.getElementById('cloudSlot').value;
+            slotNames[slot] = document.getElementById('slotNameInput').value;
+        }
 
         // ==================== TAB SWITCHING ====================
         function switchTab(tabName) {
@@ -1282,13 +1254,16 @@
 
         // ==================== ENCODER MANAGEMENT ====================
         function setAsEncoder() {
-            if (selectedKey === null) {
-                alert('キーを選択してください');
+            if (selectedKey === null || !layers[currentLayer]) {
+                alert('キーを選択してレイヤーが有効であることを確認してください');
                 return;
             }
 
-            if (!encoderKeys[selectedKey]) {
-                encoderKeys[selectedKey] = {
+            if (!layers[currentLayer].encoderKeys) layers[currentLayer].encoderKeys = {};
+            const currentEncoderKeys = layers[currentLayer].encoderKeys;
+
+            if (!currentEncoderKeys[selectedKey]) {
+                currentEncoderKeys[selectedKey] = {
                     ccw: 'KC_VOLD',
                     push: 'KC_MUTE',
                     cw: 'KC_VOLU'
@@ -1303,18 +1278,18 @@
             updateEncoderInputs();
             updateKeyInfoDisplay();
 
-            const keycode = encoderKeys[selectedKey].push;
+            const keycode = currentEncoderKeys[selectedKey].push;
             document.getElementById('keycodeInput').value = keycode;
         }
 
         function removeEncoder() {
-            if (selectedKey === null) {
+            if (selectedKey === null || !layers[currentLayer]) {
                 alert('キーを選択してください');
                 return;
             }
 
-            if (encoderKeys[selectedKey]) {
-                delete encoderKeys[selectedKey];
+            if (layers[currentLayer].encoderKeys && layers[currentLayer].encoderKeys[selectedKey]) {
+                delete layers[currentLayer].encoderKeys[selectedKey];
                 selectedEncoderSide = null;
                 document.getElementById('encoderInputs').style.display = 'none';
 
@@ -1331,17 +1306,24 @@
         }
 
         function updateEncoderInputs() {
-            if (selectedKey === null || !encoderKeys[selectedKey]) return;
+            if (selectedKey === null || !layers[currentLayer]) return;
+            const currentEncoderKeys = layers[currentLayer].encoderKeys || {};
+            const enc = currentEncoderKeys[selectedKey];
+            if (!enc) return;
 
-            const enc = encoderKeys[selectedKey];
             document.getElementById('encoderCcwInput').value = enc.ccw || 'KC_VOLD';
             document.getElementById('encoderPushInput').value = enc.push || 'KC_MUTE';
             document.getElementById('encoderCwInput').value = enc.cw || 'KC_VOLU';
         }
 
         function updateEncoderKeycode(type, value) {
-            if (selectedKey === null || !encoderKeys[selectedKey]) return;
-            encoderKeys[selectedKey][type] = value;
+            if (selectedKey === null || !layers[currentLayer]) return;
+            if (!layers[currentLayer].encoderKeys) layers[currentLayer].encoderKeys = {};
+            const currentEncoderKeys = layers[currentLayer].encoderKeys;
+
+            if (!currentEncoderKeys[selectedKey]) return;
+
+            currentEncoderKeys[selectedKey][type] = value;
             renderKeyboard();
             updateKeyInfoDisplay();
 
@@ -1357,15 +1339,17 @@
             const keyData = layoutData.find(k => k.id === selectedKey);
             if (!keyData) return;
 
+            const currentEncoderKeys = (layers[currentLayer] && layers[currentLayer].encoderKeys) ? layers[currentLayer].encoderKeys : {};
+
             let info = `
                 <strong>キーID:</strong> ${selectedKey}<br>
                 <strong>位置:</strong> X=${keyData.x.toFixed(2)}, Y=${keyData.y.toFixed(2)}<br>
                 <strong>サイズ:</strong> W=${keyData.w || 1}, H=${keyData.h || 1}<br>
             `;
 
-            if (encoderKeys[selectedKey]) {
+            if (currentEncoderKeys[selectedKey]) {
                 info += `<strong style="color: #ff8800;">エンコーダー設定:</strong><br>`;
-                const enc = encoderKeys[selectedKey];
+                const enc = currentEncoderKeys[selectedKey];
                 info += `<div style="margin: 10px 0; font-size: 0.85em;">`;
                 info += `<div style="margin-bottom: 4px;">左回転: <span style="color:#00d4ff">${enc.ccw}</span></div>`;
                 info += `<div style="margin-bottom: 4px;">プッシュ: <span style="color:#00d4ff">${enc.push}</span></div>`;
@@ -1614,9 +1598,11 @@
                 const w = (key.w || 1) * currentScale - 4;
                 const h = (key.h || 1) * currentScale - 4;
 
-                // エンコーダーの場合
-                if (encoderKeys[key.id]) {
-                    const enc = encoderKeys[key.id];
+                // エンコーダー表示
+                const currentEncoderKeys = (layers[currentLayer] && layers[currentLayer].encoderKeys) ? layers[currentLayer].encoderKeys : {};
+
+                if (currentEncoderKeys[key.id]) {
+                    const enc = currentEncoderKeys[key.id];
                     const isSelected = (selectedKey === key.id);
 
                     // 中央キー（プッシュ）
@@ -1778,8 +1764,13 @@
         function selectKey(keyId, encoderPart) {
             selectedKey = keyId;
 
+            const currentLayerData = layers[currentLayer];
+            if (!currentLayerData) return;
+            if (!currentLayerData.encoderKeys) currentLayerData.encoderKeys = {};
+            const currentEncoderKeys = currentLayerData.encoderKeys;
+
             // エンコーダーの場合、指定がなければpush（中央）をデフォルトに
-            if (encoderKeys[keyId]) {
+            if (currentEncoderKeys[keyId]) {
                 if (encoderPart) {
                     selectedEncoderSide = encoderPart;
                 } else if (!selectedEncoderSide) {
@@ -1791,12 +1782,11 @@
 
             renderKeyboard();
 
-            const currentLayerData = layers[currentLayer];
             let keycode = '';
 
             // エンコーダーの場合
-            if (encoderKeys[keyId]) {
-                keycode = encoderKeys[keyId][selectedEncoderSide || 'push'];
+            if (currentEncoderKeys[keyId]) {
+                keycode = currentEncoderKeys[keyId][selectedEncoderSide || 'push'];
                 const partLabel = selectedEncoderSide === 'ccw' ? '左回転' : selectedEncoderSide === 'cw' ? '右回転' : 'プッシュ';
                 document.getElementById('selectedKeyId').textContent = `(Key ${keyId} - ${partLabel})`;
 
@@ -1811,7 +1801,7 @@
 
             updateKeyInfoDisplay();
 
-            if (encoderKeys[keyId]) {
+            if (currentEncoderKeys[keyId]) {
                 document.getElementById('encoderInputs').style.display = 'block';
                 updateEncoderInputs();
             } else {
@@ -1835,9 +1825,12 @@
         function updateKeycode(value) {
             if (selectedKey === null || !layers[currentLayer]) return;
 
+            if (!layers[currentLayer].encoderKeys) layers[currentLayer].encoderKeys = {};
+            const currentEncoderKeys = layers[currentLayer].encoderKeys;
+
             // エンコーダーの特定サイドが選択されている場合
-            if (encoderKeys[selectedKey] && selectedEncoderSide) {
-                encoderKeys[selectedKey][selectedEncoderSide] = value;
+            if (currentEncoderKeys[selectedKey] && selectedEncoderSide) {
+                currentEncoderKeys[selectedKey][selectedEncoderSide] = value;
                 updateEncoderInputs();
                 updateKeyInfoDisplay();
             } else {
@@ -1861,7 +1854,7 @@
             switch(e.key) {
                 case 'ArrowRight':
                     // エンコーダーの場合、サイドボックス間を移動
-                    if (encoderKeys[selectedKey]) {
+                    if (layers[currentLayer].encoderKeys && layers[currentLayer].encoderKeys[selectedKey]) {
                         if (selectedEncoderSide === 'ccw') {
                             selectKey(selectedKey, 'push');
                             return;
@@ -1878,7 +1871,7 @@
                     break;
                 case 'ArrowLeft':
                     // エンコーダーの場合、サイドボックス間を移動
-                    if (encoderKeys[selectedKey]) {
+                    if (layers[currentLayer].encoderKeys && layers[currentLayer].encoderKeys[selectedKey]) {
                         if (selectedEncoderSide === 'cw') {
                             selectKey(selectedKey, 'push');
                             return;
@@ -2307,9 +2300,10 @@ ${layers.map((l, i) => `    _${l.name.toUpperCase().replace(/[^A-Z0-9]/g, '_')} 
                 const keyOrder = layoutData.map(k => k.id);
                 const keycodes = keyOrder.map(id => {
                     let kc = '';
-                    if (encoderKeys[id]) {
+                    const curEnc = (layer.encoderKeys && layer.encoderKeys[id]) ? layer.encoderKeys[id] : null;
+                    if (curEnc) {
                         // エンコーダーキーがkeymap配列に含まれる場合、通常はPushのコードを出力する
-                        kc = encoderKeys[id].push || 'KC_NO';
+                        kc = curEnc.push || 'KC_NO';
                     } else {
                         kc = layer.keys[id] || 'KC_NO';
                     }
@@ -2339,10 +2333,11 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
                 const layerNameClean = layer.name.toUpperCase().replace(/[^A-Z0-9]/g, '_');
                 output += `    [_${layerNameClean}] = {`;
 
-                const encoders = layoutData.filter(k => encoderKeys[k.id]);
+                const curEncKeys = layer.encoderKeys || {};
+                const encoders = layoutData.filter(k => curEncKeys[k.id]);
 
                 encoders.forEach((enc, idx) => {
-                    const conf = encoderKeys[enc.id];
+                    const conf = curEncKeys[enc.id];
                     output += ` { ${conf.ccw || 'KC_TRNS'}, ${conf.cw || 'KC_TRNS'} }`;
                     if (idx < encoders.length - 1) output += `,`;
                 });
@@ -2388,7 +2383,10 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
                     keymaps: layers,
                     layout: layoutData,
                     layoutName: layoutName,
-                    encoderKeys: encoderKeys,
+                    slotNames: slotNames,
+                    originalKeymapC: originalKeymapC,
+                    individualKeyColors: individualKeyColors,
+                    keyColors: keyColors,
                     notes: {
                         tapDance: notes.tapDance || [],
                         combo: notes.combo || [],
@@ -2447,10 +2445,19 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
                 layers = data.keymaps || [];
                 layoutData = data.layout || null;
                 layoutName = data.layoutName || '';
-                encoderKeys = data.encoderKeys || {};
+                slotNames = data.slotNames || {};
+                originalKeymapC = data.originalKeymapC || null;
+                individualKeyColors = data.individualKeyColors || {};
+                keyColors = data.keyColors || { bg: '#3a3a4a', text: '#ffffff', border: '#444444' };
                 notes = data.notes || { tapDance: [], combo: [], macro: [] };
 
+                // レイヤーにencoderKeysがない場合の初期化(互換性)
+                layers.forEach(l => {
+                    if (!l.encoderKeys) l.encoderKeys = {};
+                });
+
                 // UIを更新
+                document.getElementById('slotNameInput').value = slotNames[slot] || '';
                 renderLayerTabs();
                 renderKeyboard();
                 updateLayerBadge();
@@ -2468,7 +2475,6 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
         }
 
         // ==================== GitHub連携 ====================
-        let originalKeymapC = null; // 元のkeymap.cの内容を保持
 
         async function loadFromGitHub() {
             const keyboardJsonUrl = document.getElementById('githubKeyboardJsonUrl').value.trim();
@@ -2563,38 +2569,60 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
             // 元のkeymap.cのキーマップ部分のみを置換
             let output = originalKeymapC;
 
-            // キーマップ配列を生成
+            // 1. キーマップ配列を置換
             let keymapsArray = 'const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {\n';
 
             layers.forEach((layer, layerIndex) => {
-                // レイヤー名を維持
                 const layerName = layer.name;
                 keymapsArray += `    [${layerName}] = LAYOUT_${layoutName || 'LAYOUT'}(\n`;
 
                 const keycodes = layoutData.map(k => {
-                    let kc = layer.keys[k.id] || 'KC_NO';
-                    // QMK慣習に合わせて変換
+                    const curEnc = (layer.encoderKeys && layer.encoderKeys[k.id]) ? layer.encoderKeys[k.id] : null;
+                    let kc = curEnc ? (curEnc.push || 'KC_NO') : (layer.keys[k.id] || 'KC_NO');
                     if (kc === 'KC_TRNS') return '_______';
                     if (kc === 'KC_NO') return 'XXXXXXX';
                     return kc;
                 });
 
-                // 10キーずつ改行して出力
                 for (let i = 0; i < keycodes.length; i += 10) {
                     const chunk = keycodes.slice(i, i + 10);
                     keymapsArray += `        ${chunk.join(', ')}${i + 10 < keycodes.length ? ',' : ''}\n`;
                 }
 
-                keymapsArray += `    )`;
-                if (layerIndex < layers.length - 1) keymapsArray += ',';
-                keymapsArray += '\n';
+                keymapsArray += `    )${layerIndex < layers.length - 1 ? ',' : ''}\n`;
             });
+            keymapsArray += '};';
 
-            keymapsArray += '};\n';
-
-            // 元のコードのキーマップ部分を置換
-            const keymapRegex = /const\s+uint16_t\s+PROGMEM\s+keymaps\[\]\[MATRIX_ROWS\]\[MATRIX_COLS\]\s*=\s*\{[\s\S]*?\};/;
+            const keymapRegex = /const\s+uint16_t\s+PROGMEM\s+keymaps\[[^\]]*\]\[[^\]]*\]\[[^\]]*\]\s*=\s*\{[\s\S]*?\};/;
             output = output.replace(keymapRegex, keymapsArray);
+
+            // 2. エンコーダーマップを置換 (存在する場合のみ)
+            let encoderMapArray = '#if defined(ENCODER_MAP_ENABLE)\nconst uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {\n';
+            layers.forEach((layer, layerIndex) => {
+                const layerName = layer.name;
+                encoderMapArray += `    [${layerName}] = {`;
+
+                const curEncKeys = layer.encoderKeys || {};
+                const encoders = layoutData.filter(k => curEncKeys[k.id]);
+
+                encoders.forEach((enc, idx) => {
+                    const conf = curEncKeys[enc.id];
+                    encoderMapArray += ` { ${conf.ccw || 'KC_TRNS'}, ${conf.cw || 'KC_TRNS'} }`;
+                    if (idx < encoders.length - 1) encoderMapArray += `,`;
+                });
+                encoderMapArray += ` }${layerIndex < layers.length - 1 ? ',' : ''}\n`;
+            });
+            encoderMapArray += '};\n#endif';
+
+            const encoderRegex = /#if\s+defined\(ENCODER_MAP_ENABLE\)[\s\S]*?const\s+uint16_t\s+PROGMEM\s+encoder_map\[[\s\S]*?};[\s\S]*?#endif/;
+            if (output.match(encoderRegex)) {
+                output = output.replace(encoderRegex, encoderMapArray);
+            } else {
+                // encoder_mapが見つからない場合、keymapsの後に挿入することを検討するか、
+                // 元のファイルにないなら追加しない（元の構造を尊重）
+                // ここでは元のファイルを尊重し、なければ追加しない
+                console.warn('encoder_map block not found in original file.');
+            }
 
             return output;
         }
