@@ -1065,6 +1065,7 @@
         let selectedEncoderSide = null; // 'ccw', 'cw', 'push', or null (default standard key)
         let keyColors = { bg: '#3a3a4a', text: '#ffffff', border: '#444444' };
         let individualKeyColors = {}; // { keyId: { bg, text } }
+        let physicalEncoders = []; // エンコーダーとして設定された物理キーのIDリスト (全レイヤー共通)
         let slotNames = {}; // { slot1: '名前', ... }
         let notes = { tapDance: [], combo: [], macro: [] };
         let nextNoteId = { tapDance: 1, combo: 1, macro: 1 };
@@ -1259,16 +1260,22 @@
                 return;
             }
 
-            if (!layers[currentLayer].encoderKeys) layers[currentLayer].encoderKeys = {};
-            const currentEncoderKeys = layers[currentLayer].encoderKeys;
-
-            if (!currentEncoderKeys[selectedKey]) {
-                currentEncoderKeys[selectedKey] = {
-                    ccw: 'KC_VOLD',
-                    push: 'KC_MUTE',
-                    cw: 'KC_VOLU'
-                };
+            // 物理エンコーダーリストに追加 (グローバル)
+            if (!physicalEncoders.includes(selectedKey)) {
+                physicalEncoders.push(selectedKey);
             }
+
+            // 全レイヤーに対してエンコーダー設定を初期化 (割当はレイヤー別)
+            layers.forEach(layer => {
+                if (!layer.encoderKeys) layer.encoderKeys = {};
+                if (!layer.encoderKeys[selectedKey]) {
+                    layer.encoderKeys[selectedKey] = {
+                        ccw: 'KC_VOLD',
+                        push: 'KC_MUTE',
+                        cw: 'KC_VOLU'
+                    };
+                }
+            });
 
             // エンコーダー設定時は自動的にpush（中央）を選択状態にする
             selectedEncoderSide = 'push';
@@ -1278,7 +1285,8 @@
             updateEncoderInputs();
             updateKeyInfoDisplay();
 
-            const keycode = currentEncoderKeys[selectedKey].push;
+            const currentEncoderKeys = (layers[currentLayer] && layers[currentLayer].encoderKeys) ? layers[currentLayer].encoderKeys : {};
+            const keycode = currentEncoderKeys[selectedKey] ? currentEncoderKeys[selectedKey].push : 'KC_NO';
             document.getElementById('keycodeInput').value = keycode;
         }
 
@@ -1288,21 +1296,26 @@
                 return;
             }
 
-            if (layers[currentLayer].encoderKeys && layers[currentLayer].encoderKeys[selectedKey]) {
-                delete layers[currentLayer].encoderKeys[selectedKey];
-                selectedEncoderSide = null;
-                document.getElementById('encoderInputs').style.display = 'none';
+            // 物理エンコーダーリストから削除 (グローバル)
+            physicalEncoders = physicalEncoders.filter(id => id !== selectedKey);
 
-                // 通常キーとしての値を入力欄にセット
-                const currentLayerData = layers[currentLayer];
-                const keycode = currentLayerData?.keys[selectedKey] || '';
-                document.getElementById('keycodeInput').value = keycode;
+            // 全レイヤーからエンコーダー設定を削除 (割当も削除)
+            layers.forEach(layer => {
+                if (layer.encoderKeys) {
+                    delete layer.encoderKeys[selectedKey];
+                }
+            });
 
-                renderKeyboard();
-                updateKeyInfoDisplay();
-            } else {
-                alert('このキーはエンコーダーに設定されていません');
-            }
+            selectedEncoderSide = null;
+            document.getElementById('encoderInputs').style.display = 'none';
+
+            // 通常キーとしての値を入力欄にセット
+            const currentLayerData = layers[currentLayer];
+            const keycode = currentLayerData?.keys[selectedKey] || '';
+            document.getElementById('keycodeInput').value = keycode;
+
+            renderKeyboard();
+            updateKeyInfoDisplay();
         }
 
         function updateEncoderInputs() {
@@ -1599,10 +1612,11 @@
                 const h = (key.h || 1) * currentScale - 4;
 
                 // エンコーダー表示
-                const currentEncoderKeys = (layers[currentLayer] && layers[currentLayer].encoderKeys) ? layers[currentLayer].encoderKeys : {};
+                const isEncoder = physicalEncoders.includes(key.id);
 
-                if (currentEncoderKeys[key.id]) {
-                    const enc = currentEncoderKeys[key.id];
+                if (isEncoder) {
+                    const currentEncoderKeys = (layers[currentLayer] && layers[currentLayer].encoderKeys) ? layers[currentLayer].encoderKeys : {};
+                    const enc = currentEncoderKeys[key.id] || { ccw: 'KC_NO', push: 'KC_NO', cw: 'KC_NO' };
                     const isSelected = (selectedKey === key.id);
 
                     // 中央キー（プッシュ）
@@ -1764,13 +1778,21 @@
         function selectKey(keyId, encoderPart) {
             selectedKey = keyId;
 
+            if (keyId === null) {
+                document.getElementById('editorPanel').classList.remove('visible');
+                renderKeyboard();
+                return;
+            }
+
             const currentLayerData = layers[currentLayer];
             if (!currentLayerData) return;
             if (!currentLayerData.encoderKeys) currentLayerData.encoderKeys = {};
             const currentEncoderKeys = currentLayerData.encoderKeys;
 
+            const isEncoder = physicalEncoders.includes(keyId);
+
             // エンコーダーの場合、指定がなければpush（中央）をデフォルトに
-            if (currentEncoderKeys[keyId]) {
+            if (isEncoder) {
                 if (encoderPart) {
                     selectedEncoderSide = encoderPart;
                 } else if (!selectedEncoderSide) {
@@ -1785,8 +1807,9 @@
             let keycode = '';
 
             // エンコーダーの場合
-            if (currentEncoderKeys[keyId]) {
-                keycode = currentEncoderKeys[keyId][selectedEncoderSide || 'push'];
+            if (isEncoder) {
+                const enc = currentEncoderKeys[keyId] || { ccw: 'KC_NO', push: 'KC_NO', cw: 'KC_NO' };
+                keycode = enc[selectedEncoderSide || 'push'];
                 const partLabel = selectedEncoderSide === 'ccw' ? '左回転' : selectedEncoderSide === 'cw' ? '右回転' : 'プッシュ';
                 document.getElementById('selectedKeyId').textContent = `(Key ${keyId} - ${partLabel})`;
 
@@ -1801,7 +1824,7 @@
 
             updateKeyInfoDisplay();
 
-            if (currentEncoderKeys[keyId]) {
+            if (isEncoder) {
                 document.getElementById('encoderInputs').style.display = 'block';
                 updateEncoderInputs();
             } else {
@@ -1829,7 +1852,10 @@
             const currentEncoderKeys = layers[currentLayer].encoderKeys;
 
             // エンコーダーの特定サイドが選択されている場合
-            if (currentEncoderKeys[selectedKey] && selectedEncoderSide) {
+            if (physicalEncoders.includes(selectedKey) && selectedEncoderSide) {
+                if (!currentEncoderKeys[selectedKey]) {
+                    currentEncoderKeys[selectedKey] = { ccw: 'KC_NO', push: 'KC_NO', cw: 'KC_NO' };
+                }
                 currentEncoderKeys[selectedKey][selectedEncoderSide] = value;
                 updateEncoderInputs();
                 updateKeyInfoDisplay();
@@ -1854,7 +1880,7 @@
             switch(e.key) {
                 case 'ArrowRight':
                     // エンコーダーの場合、サイドボックス間を移動
-                    if (layers[currentLayer].encoderKeys && layers[currentLayer].encoderKeys[selectedKey]) {
+                    if (physicalEncoders.includes(selectedKey)) {
                         if (selectedEncoderSide === 'ccw') {
                             selectKey(selectedKey, 'push');
                             return;
@@ -1871,7 +1897,7 @@
                     break;
                 case 'ArrowLeft':
                     // エンコーダーの場合、サイドボックス間を移動
-                    if (layers[currentLayer].encoderKeys && layers[currentLayer].encoderKeys[selectedKey]) {
+                    if (physicalEncoders.includes(selectedKey)) {
                         if (selectedEncoderSide === 'cw') {
                             selectKey(selectedKey, 'push');
                             return;
@@ -2300,10 +2326,11 @@ ${layers.map((l, i) => `    _${l.name.toUpperCase().replace(/[^A-Z0-9]/g, '_')} 
                 const keyOrder = layoutData.map(k => k.id);
                 const keycodes = keyOrder.map(id => {
                     let kc = '';
+                    const isPhysEnc = physicalEncoders.includes(id);
                     const curEnc = (layer.encoderKeys && layer.encoderKeys[id]) ? layer.encoderKeys[id] : null;
-                    if (curEnc) {
+                    if (isPhysEnc) {
                         // エンコーダーキーがkeymap配列に含まれる場合、通常はPushのコードを出力する
-                        kc = curEnc.push || 'KC_NO';
+                        kc = curEnc ? (curEnc.push || 'KC_NO') : 'KC_NO';
                     } else {
                         kc = layer.keys[id] || 'KC_NO';
                     }
@@ -2334,12 +2361,11 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
                 output += `    [_${layerNameClean}] = {`;
 
                 const curEncKeys = layer.encoderKeys || {};
-                const encoders = layoutData.filter(k => curEncKeys[k.id]);
 
-                encoders.forEach((enc, idx) => {
-                    const conf = curEncKeys[enc.id];
+                physicalEncoders.forEach((encId, idx) => {
+                    const conf = curEncKeys[encId] || { ccw: 'KC_TRNS', cw: 'KC_TRNS' };
                     output += ` { ${conf.ccw || 'KC_TRNS'}, ${conf.cw || 'KC_TRNS'} }`;
-                    if (idx < encoders.length - 1) output += `,`;
+                    if (idx < physicalEncoders.length - 1) output += `,`;
                 });
 
                 output += ` },\n`;
@@ -2392,6 +2418,7 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
                         combo: notes.combo || [],
                         macro: notes.macro || []
                     },
+                    physicalEncoders: physicalEncoders,
                     slotName: slot
                 };
 
@@ -2450,6 +2477,22 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
                 individualKeyColors = data.individualKeyColors || {};
                 keyColors = data.keyColors || { bg: '#3a3a4a', text: '#ffffff', border: '#444444' };
                 notes = data.notes || { tapDance: [], combo: [], macro: [] };
+
+                if (data.physicalEncoders) {
+                    physicalEncoders = data.physicalEncoders;
+                } else {
+                    // 旧形式からのマイグレーション
+                    physicalEncoders = [];
+                    layers.forEach(l => {
+                        if (l.encoderKeys) {
+                            Object.keys(l.encoderKeys).forEach(id => {
+                                if (!physicalEncoders.includes(id)) {
+                                    physicalEncoders.push(id);
+                                }
+                            });
+                        }
+                    });
+                }
 
                 // レイヤーにencoderKeysがない場合の初期化(互換性)
                 layers.forEach(l => {
@@ -2577,8 +2620,9 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
                 keymapsArray += `    [${layerName}] = LAYOUT_${layoutName || 'LAYOUT'}(\n`;
 
                 const keycodes = layoutData.map(k => {
+                    const isPhysEnc = physicalEncoders.includes(k.id);
                     const curEnc = (layer.encoderKeys && layer.encoderKeys[k.id]) ? layer.encoderKeys[k.id] : null;
-                    let kc = curEnc ? (curEnc.push || 'KC_NO') : (layer.keys[k.id] || 'KC_NO');
+                    let kc = isPhysEnc ? (curEnc ? (curEnc.push || 'KC_NO') : 'KC_NO') : (layer.keys[k.id] || 'KC_NO');
                     if (kc === 'KC_TRNS') return '_______';
                     if (kc === 'KC_NO') return 'XXXXXXX';
                     return kc;
@@ -2603,12 +2647,11 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
                 encoderMapArray += `    [${layerName}] = {`;
 
                 const curEncKeys = layer.encoderKeys || {};
-                const encoders = layoutData.filter(k => curEncKeys[k.id]);
 
-                encoders.forEach((enc, idx) => {
-                    const conf = curEncKeys[enc.id];
+                physicalEncoders.forEach((encId, idx) => {
+                    const conf = curEncKeys[encId] || { ccw: 'KC_TRNS', cw: 'KC_TRNS' };
                     encoderMapArray += ` { ${conf.ccw || 'KC_TRNS'}, ${conf.cw || 'KC_TRNS'} }`;
-                    if (idx < encoders.length - 1) encoderMapArray += `,`;
+                    if (idx < physicalEncoders.length - 1) encoderMapArray += `,`;
                 });
                 encoderMapArray += ` }${layerIndex < layers.length - 1 ? ',' : ''}\n`;
             });
@@ -2645,6 +2688,16 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
         renderNotes('tapDance');
         renderNotes('combo');
         renderNotes('macro');
+
+        // キーボード以外のエリア（コンテナ）をクリックした際に選択解除
+        const kbContainer = document.getElementById('keyboardContainer');
+        if (kbContainer) {
+            kbContainer.onclick = (e) => {
+                if (e.target === kbContainer) {
+                    selectKey(null);
+                }
+            };
+        }
     </script>
 </body>
 </html>
