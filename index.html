@@ -1456,11 +1456,14 @@
             reader.onload = (e) => {
                 try {
                     const content = e.target.result;
+                    originalKeymapC = content; // 元のコードを保持
                     parseKeymapC(content);
                     setStatus('keymapCStatus', 'success', '✓ keymap.c読込完了');
                     renderLayerTabs();
                     renderKeyboard();
+                    updateLayerBadge();
                 } catch (err) {
+                    console.error('File load error:', err);
                     setStatus('keymapCStatus', 'error', `✗ エラー: ${err.message}`);
                 }
             };
@@ -1468,23 +1471,58 @@
         }
 
         function parseKeymapC(content) {
-            const layerRegex = /\[(\w+)\]\s*=\s*\w+\s*\(([\s\S]*?)\)(?=\s*,?\s*(?:\[|};))/g;
-            const matches = [...content.matchAll(layerRegex)];
+            // 1. keymaps配列の内容を抽出 (より柔軟な正規表現)
+            // const uint16_t PROGMEM keymaps[][...] = { ... }; の中身を取得
+            const keymapBlockRegex = /const\s+uint16_t\s+PROGMEM\s+keymaps\[[^\]]*\]\[[^\]]*\]\[[^\]]*\]\s*=\s*\{([\s\S]*?)\};/;
+            const blockMatch = content.match(keymapBlockRegex);
+
+            let targetContent = content;
+            if (blockMatch) {
+                targetContent = blockMatch[1];
+            } else {
+                console.warn('Keymaps array block not found with strict regex, searching entire file...');
+            }
+
+            // 2. レイヤー定義を抽出
+            // [NAME] = LAYOUT...( ... ) の形式を探す
+            // LAYOUTマクロがなくても対応できるよう、[NAME] = ... ( ... ) にマッチさせるが、
+            // 偽陽性を防ぐため、keymapBlockの中だけ、あるいは特定のキーワード(LAYER_)を優先するなどの工夫が必要
+            const layerRegex = /\[(\w+)\]\s*=\s*[A-Z0-9_]*LAYOUT[A-Z0-9_]*\s*\(([\s\S]*?)\)(?=\s*,?\s*(?:\[|};|\)))/g;
+            let matches = [...targetContent.matchAll(layerRegex)];
 
             if (matches.length === 0) {
-                throw new Error('レイヤー定義が見つかりません');
+                // LAYOUTマクロがない場合、もう少し緩い条件で探す (ただし[] = ... ( ... ) の形式)
+                const fallbackLayerRegex = /\[(LAYER_\w+|\d+)\]\s*=\s*\w+\s*\(([\s\S]*?)\)(?=\s*,?\s*(?:\[|};|\)))/g;
+                matches = [...targetContent.matchAll(fallbackLayerRegex)];
+            }
+
+            if (matches.length === 0) {
+                throw new Error('レイヤー定義が見つかりませんでした。keymap.cの形式を確認してください。');
             }
 
             const newLayers = [];
-            matches.forEach((match, idx) => {
-                const layerName = match[1].replace(/^_/, '');
+            matches.forEach((match) => {
+                const layerName = match[1];
                 const keysStr = match[2];
-                const keycodes = keysStr.split(',').map(k => k.trim()).filter(k => k.length > 0);
+
+                // キーコードを抽出 (カンマ区切り、コメント除去)
+                const keycodes = keysStr
+                    .replace(/\/\/.*/g, '') // 行コメント除去
+                    .replace(/\/\*[\s\S]*?\*\//g, '') // ブロックコメント除去
+                    .split(',')
+                    .map(k => k.trim())
+                    .filter(k => k.length > 0);
 
                 const layerObj = { name: layerName, keys: {} };
                 keycodes.forEach((kc, i) => {
-                    // _______をKC_TRNSとして扱う
-                    layerObj.keys[i] = kc === '_______' ? 'KC_TRNS' : kc;
+                    const cleanKc = kc === '_______' ? 'KC_TRNS' : (kc === 'XXXXXXX' ? 'KC_NO' : kc);
+
+                    // layoutDataがある場合はIDマッピング、ない場合は数値インデックス
+                    if (layoutData && layoutData[i]) {
+                        layerObj.keys[layoutData[i].id] = cleanKc;
+                    } else {
+                        layerObj.keys[i] = cleanKc;
+                    }
                 });
                 newLayers.push(layerObj);
             });
@@ -1492,7 +1530,6 @@
             if (newLayers.length > 0) {
                 layers = newLayers;
                 currentLayer = 0;
-                updateLayerBadge();
             }
         }
 
@@ -2466,8 +2503,16 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
                     }
                     const keymapC = await keymapResponse.text();
                     originalKeymapC = keymapC; // 元のコードを保存
-                    parseKeymapCData(keymapC);
+                    parseKeymapC(keymapC);
                 }
+
+                // UIを更新
+                renderLayerTabs();
+                renderKeyboard();
+                updateLayerBadge();
+                renderNotes('tapDance');
+                renderNotes('combo');
+                renderNotes('macro');
 
                 statusEl.textContent = '✓ GitHubから読み込みました';
                 statusEl.style.color = '#00ff88';
@@ -2508,54 +2553,6 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
             document.getElementById('keyboardJsonStatus').className = 'status success';
         }
 
-        function parseKeymapCData(content) {
-            // keymap.cからキーマップ配列を抽出
-            const keymapRegex = /const\s+uint16_t\s+PROGMEM\s+keymaps\[\]\[MATRIX_ROWS\]\[MATRIX_COLS\]\s*=\s*\{([\s\S]*?)\};/;
-            const match = content.match(keymapRegex);
-
-            if (!match) {
-                throw new Error('キーマップ配列が見つかりません');
-            }
-
-            const keymapsContent = match[1];
-
-            // レイヤーごとに分割
-            const layerRegex = /\[(\w+)\]\s*=\s*LAYOUT[^(]*\(([\s\S]*?)\)/g;
-            let layerMatch;
-            layers = [];
-
-            while ((layerMatch = layerRegex.exec(keymapsContent)) !== null) {
-                const layerName = layerMatch[1];
-                const keysContent = layerMatch[2];
-
-                // キーコードを抽出
-                const keycodes = keysContent
-                    .split(',')
-                    .map(k => k.trim())
-                    .filter(k => k.length > 0);
-
-                layers.push({
-                    name: layerName,
-                    keys: keycodes
-                });
-            }
-
-            // エンコーダーマップも抽出(存在する場合)
-            const encoderRegex = /#if\s+defined\(ENCODER_MAP_ENABLE\)([\s\S]*?)#endif/;
-            const encoderMatch = content.match(encoderRegex);
-
-            if (encoderMatch) {
-                // エンコーダーマップの解析は後で実装
-                console.log('Encoder map found');
-            }
-
-            renderLayerTabs();
-            renderKeyboard();
-            updateLayerBadge();
-
-            document.getElementById('keymapCStatus').textContent = `✓ ${layers.length}レイヤー読み込み完了`;
-            document.getElementById('keymapCStatus').className = 'status success';
-        }
 
         function generateKeymapCFromOriginal() {
             if (!originalKeymapC) {
@@ -2570,15 +2567,23 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
             let keymapsArray = 'const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {\n';
 
             layers.forEach((layer, layerIndex) => {
-                const layerNameClean = layer.name.toUpperCase().replace(/[^A-Z0-9_]/g, '_');
-                keymapsArray += `    [${layerNameClean}] = LAYOUT_${layoutName}(\n`;
+                // レイヤー名を維持
+                const layerName = layer.name;
+                keymapsArray += `    [${layerName}] = LAYOUT_${layoutName || 'LAYOUT'}(\n`;
 
-                const keys = layer.keys || [];
-                keys.forEach((key, idx) => {
-                    keymapsArray += `        ${key}`;
-                    if (idx < keys.length - 1) keymapsArray += ',';
-                    keymapsArray += '\n';
+                const keycodes = layoutData.map(k => {
+                    let kc = layer.keys[k.id] || 'KC_NO';
+                    // QMK慣習に合わせて変換
+                    if (kc === 'KC_TRNS') return '_______';
+                    if (kc === 'KC_NO') return 'XXXXXXX';
+                    return kc;
                 });
+
+                // 10キーずつ改行して出力
+                for (let i = 0; i < keycodes.length; i += 10) {
+                    const chunk = keycodes.slice(i, i + 10);
+                    keymapsArray += `        ${chunk.join(', ')}${i + 10 < keycodes.length ? ',' : ''}\n`;
+                }
 
                 keymapsArray += `    )`;
                 if (layerIndex < layers.length - 1) keymapsArray += ',';
