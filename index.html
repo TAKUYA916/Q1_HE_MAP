@@ -999,6 +999,58 @@
             <div class="tab-content" id="saveTab">
                 <div class="panel-title">💾 保存 / 読込</div>
 
+                <!-- クラウド保存セクション -->
+                <div style="margin-bottom: 20px;">
+                    <h4 style="color: #00d4ff; margin-bottom: 10px;">☁️ クラウド保存 (Google Cloud Storage)</h4>
+                    <div class="gist-settings">
+                        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+                            <label style="min-width: 80px;">スロット:</label>
+                            <select id="cloudSlot" style="flex: 1; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; padding: 8px; color: #fff;">
+                                <option value="slot1">スロット 1</option>
+                                <option value="slot2">スロット 2</option>
+                                <option value="slot3">スロット 3</option>
+                                <option value="slot4">スロット 4</option>
+                                <option value="slot5">スロット 5</option>
+                                <option value="slot6">スロット 6</option>
+                                <option value="slot7">スロット 7</option>
+                                <option value="slot8">スロット 8</option>
+                                <option value="slot9">スロット 9</option>
+                                <option value="slot10">スロット 10</option>
+                            </select>
+                        </div>
+                        <div id="cloudStatus" style="font-size: 0.85em; color: #888; margin-bottom: 10px;"></div>
+                    </div>
+                    <div class="actions">
+                        <button class="btn" onclick="saveToCloud()">☁️ クラウドに保存</button>
+                        <button class="btn btn-secondary" onclick="loadFromCloud()">☁️ クラウドから読込</button>
+                    </div>
+                </div>
+
+                <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
+
+                <!-- GitHub URL読み込みセクション -->
+                <div style="margin-bottom: 20px;">
+                    <h4 style="color: #00d4ff; margin-bottom: 10px;">🔗 GitHub URL から読み込み</h4>
+                    <div class="gist-settings">
+                        <div class="gist-input" style="margin-bottom: 10px;">
+                            <input type="text" id="githubKeyboardJsonUrl"
+                                   placeholder="keyboard.json の GitHub raw URL"
+                                   value="https://raw.githubusercontent.com/TAKUYA916/qmk_firmware/2025q3/keyboards/keychron/q1_he/ansi_encoder/keyboard.json">
+                        </div>
+                        <div class="gist-input" style="margin-bottom: 10px;">
+                            <input type="text" id="githubKeymapCUrl"
+                                   placeholder="keymap.c の GitHub raw URL"
+                                   value="https://raw.githubusercontent.com/TAKUYA916/qmk_firmware/2025q3/keyboards/keychron/q1_he/ansi_encoder/keymaps/my_map/keymap.c">
+                        </div>
+                        <div id="githubStatus" style="font-size: 0.85em; color: #888; margin-bottom: 10px;"></div>
+                    </div>
+                    <div class="actions">
+                        <button class="btn" onclick="loadFromGitHub()">🔗 GitHubから読み込み</button>
+                    </div>
+                </div>
+
+                <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
+
                 <div style="margin-bottom: 20px;">
                     <h4 style="color: #00d4ff; margin-bottom: 10px;">GitHub Gist 連携</h4>
                     <div class="gist-settings">
@@ -2267,7 +2319,8 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
         }
 
         function downloadKeymap() {
-            const content = generateKeymapC();
+            // 元のkeymap.cがある場合はそれを使用、ない場合は新規生成
+            const content = originalKeymapC ? generateKeymapCFromOriginal() : generateKeymapC();
             if (!content) return;
 
             const blob = new Blob([content], { type: 'text/plain' });
@@ -2283,6 +2336,262 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+        }
+
+        // ==================== クラウド保存・読み込み ====================
+        async function saveToCloud() {
+            const slot = document.getElementById('cloudSlot').value;
+            const statusEl = document.getElementById('cloudStatus');
+
+            try {
+                statusEl.textContent = '保存中...';
+                statusEl.style.color = '#00d4ff';
+
+                const data = {
+                    keymaps: layers,
+                    layout: layoutData,
+                    layoutName: layoutName,
+                    encoderKeys: encoderKeys,
+                    notes: {
+                        tapDance: notes.tapDance || [],
+                        combo: notes.combo || [],
+                        macro: notes.macro || []
+                    },
+                    slotName: slot
+                };
+
+                const response = await fetch(`/save?slot=${slot}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.hint || error.message || '保存に失敗しました');
+                }
+
+                const result = await response.json();
+                statusEl.textContent = `✓ ${slot} に保存しました (${result.size} bytes)`;
+                statusEl.style.color = '#00ff88';
+            } catch (err) {
+                console.error('Save error:', err);
+                statusEl.textContent = `✗ エラー: ${err.message}`;
+                statusEl.style.color = '#ff4444';
+            }
+        }
+
+        async function loadFromCloud() {
+            const slot = document.getElementById('cloudSlot').value;
+            const statusEl = document.getElementById('cloudStatus');
+
+            try {
+                statusEl.textContent = '読み込み中...';
+                statusEl.style.color = '#00d4ff';
+
+                const response = await fetch(`/load?slot=${slot}`);
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.hint || error.message || '読み込みに失敗しました');
+                }
+
+                const data = await response.json();
+
+                if (!data.keymaps || data.keymaps.length === 0) {
+                    statusEl.textContent = `${slot} にデータがありません`;
+                    statusEl.style.color = '#888';
+                    return;
+                }
+
+                // データを復元
+                layers = data.keymaps || [];
+                layoutData = data.layout || null;
+                layoutName = data.layoutName || '';
+                encoderKeys = data.encoderKeys || {};
+                notes = data.notes || { tapDance: [], combo: [], macro: [] };
+
+                // UIを更新
+                renderLayerTabs();
+                renderKeyboard();
+                updateLayerBadge();
+                renderNotes('tapDance');
+                renderNotes('combo');
+                renderNotes('macro');
+
+                statusEl.textContent = `✓ ${slot} から読み込みました`;
+                statusEl.style.color = '#00ff88';
+            } catch (err) {
+                console.error('Load error:', err);
+                statusEl.textContent = `✗ エラー: ${err.message}`;
+                statusEl.style.color = '#ff4444';
+            }
+        }
+
+        // ==================== GitHub連携 ====================
+        let originalKeymapC = null; // 元のkeymap.cの内容を保持
+
+        async function loadFromGitHub() {
+            const keyboardJsonUrl = document.getElementById('githubKeyboardJsonUrl').value.trim();
+            const keymapCUrl = document.getElementById('githubKeymapCUrl').value.trim();
+            const statusEl = document.getElementById('githubStatus');
+
+            if (!keyboardJsonUrl && !keymapCUrl) {
+                statusEl.textContent = '✗ 少なくとも1つのURLを入力してください';
+                statusEl.style.color = '#ff4444';
+                return;
+            }
+
+            try {
+                statusEl.textContent = '読み込み中...';
+                statusEl.style.color = '#00d4ff';
+
+                // keyboard.jsonを読み込み
+                if (keyboardJsonUrl) {
+                    const keyboardResponse = await fetch(`/github-proxy?url=${encodeURIComponent(keyboardJsonUrl)}`);
+                    if (!keyboardResponse.ok) {
+                        throw new Error('keyboard.jsonの読み込みに失敗しました');
+                    }
+                    const keyboardJson = await keyboardResponse.json();
+                    parseKeyboardJsonData(keyboardJson);
+                }
+
+                // keymap.cを読み込み
+                if (keymapCUrl) {
+                    const keymapResponse = await fetch(`/github-proxy?url=${encodeURIComponent(keymapCUrl)}`);
+                    if (!keymapResponse.ok) {
+                        throw new Error('keymap.cの読み込みに失敗しました');
+                    }
+                    const keymapC = await keymapResponse.text();
+                    originalKeymapC = keymapC; // 元のコードを保存
+                    parseKeymapCData(keymapC);
+                }
+
+                statusEl.textContent = '✓ GitHubから読み込みました';
+                statusEl.style.color = '#00ff88';
+            } catch (err) {
+                console.error('GitHub load error:', err);
+                statusEl.textContent = `✗ エラー: ${err.message}`;
+                statusEl.style.color = '#ff4444';
+            }
+        }
+
+        function parseKeyboardJsonData(data) {
+            // keyboard.jsonからレイアウト情報を抽出
+            const layouts = data.layouts || {};
+            const layoutKeys = Object.keys(layouts);
+
+            if (layoutKeys.length === 0) {
+                throw new Error('レイアウト情報が見つかりません');
+            }
+
+            const layoutKey = layoutKeys[0];
+            layoutName = layoutKey;
+            const layout = layouts[layoutKey].layout;
+
+            // レイアウトデータを変換
+            layoutData = layout.map((key, index) => {
+                return {
+                    id: `key_${key.matrix[0]}_${key.matrix[1]}`,
+                    x: key.x * 60, // スケール調整
+                    y: key.y * 60,
+                    w: (key.w || 1) * 60,
+                    h: (key.h || 1) * 60,
+                    matrix: key.matrix
+                };
+            });
+
+            renderKeyboard();
+            document.getElementById('keyboardJsonStatus').textContent = '✓ 読み込み完了';
+            document.getElementById('keyboardJsonStatus').className = 'status success';
+        }
+
+        function parseKeymapCData(content) {
+            // keymap.cからキーマップ配列を抽出
+            const keymapRegex = /const\s+uint16_t\s+PROGMEM\s+keymaps\[\]\[MATRIX_ROWS\]\[MATRIX_COLS\]\s*=\s*\{([\s\S]*?)\};/;
+            const match = content.match(keymapRegex);
+
+            if (!match) {
+                throw new Error('キーマップ配列が見つかりません');
+            }
+
+            const keymapsContent = match[1];
+
+            // レイヤーごとに分割
+            const layerRegex = /\[(\w+)\]\s*=\s*LAYOUT[^(]*\(([\s\S]*?)\)/g;
+            let layerMatch;
+            layers = [];
+
+            while ((layerMatch = layerRegex.exec(keymapsContent)) !== null) {
+                const layerName = layerMatch[1];
+                const keysContent = layerMatch[2];
+
+                // キーコードを抽出
+                const keycodes = keysContent
+                    .split(',')
+                    .map(k => k.trim())
+                    .filter(k => k.length > 0);
+
+                layers.push({
+                    name: layerName,
+                    keys: keycodes
+                });
+            }
+
+            // エンコーダーマップも抽出(存在する場合)
+            const encoderRegex = /#if\s+defined\(ENCODER_MAP_ENABLE\)([\s\S]*?)#endif/;
+            const encoderMatch = content.match(encoderRegex);
+
+            if (encoderMatch) {
+                // エンコーダーマップの解析は後で実装
+                console.log('Encoder map found');
+            }
+
+            renderLayerTabs();
+            renderKeyboard();
+            updateLayerBadge();
+
+            document.getElementById('keymapCStatus').textContent = `✓ ${layers.length}レイヤー読み込み完了`;
+            document.getElementById('keymapCStatus').className = 'status success';
+        }
+
+        function generateKeymapCFromOriginal() {
+            if (!originalKeymapC) {
+                // 元のkeymap.cがない場合は従来の方法で生成
+                return generateKeymapC();
+            }
+
+            // 元のkeymap.cのキーマップ部分のみを置換
+            let output = originalKeymapC;
+
+            // キーマップ配列を生成
+            let keymapsArray = 'const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {\n';
+
+            layers.forEach((layer, layerIndex) => {
+                const layerNameClean = layer.name.toUpperCase().replace(/[^A-Z0-9_]/g, '_');
+                keymapsArray += `    [${layerNameClean}] = LAYOUT_${layoutName}(\n`;
+
+                const keys = layer.keys || [];
+                keys.forEach((key, idx) => {
+                    keymapsArray += `        ${key}`;
+                    if (idx < keys.length - 1) keymapsArray += ',';
+                    keymapsArray += '\n';
+                });
+
+                keymapsArray += `    )`;
+                if (layerIndex < layers.length - 1) keymapsArray += ',';
+                keymapsArray += '\n';
+            });
+
+            keymapsArray += '};\n';
+
+            // 元のコードのキーマップ部分を置換
+            const keymapRegex = /const\s+uint16_t\s+PROGMEM\s+keymaps\[\]\[MATRIX_ROWS\]\[MATRIX_COLS\]\s*=\s*\{[\s\S]*?\};/;
+            output = output.replace(keymapRegex, keymapsArray);
+
+            return output;
         }
 
         // ==================== EVENT LISTENERS ====================
